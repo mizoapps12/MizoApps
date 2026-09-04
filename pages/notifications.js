@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where, orderBy, updateDoc, doc } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db, auth } from '@/firebase';
 export default function Notifications(){
   const [notis,setNotis]=useState([]); const [me,setMe]=useState(null);
   useEffect(()=>{ auth.onAuthStateChanged(u=>{ setMe(u); if(u) onSnapshot(query(collection(db,"notifications"), where("to","==",u.uid), orderBy("time","desc")), s=>{ setNotis(s.docs.map(d=>({id:d.id,...d.data()}))); s.docs.forEach(async d=>{ if(!d.data().read) await updateDoc(doc(db,"notifications",d.id),{read:true}); }); }); }); },[]);
