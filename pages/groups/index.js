@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function Groups() {
   const [groups, setGroups] = useState([]);
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState('my'); // my | all | create
+  const [tab, setTab] = useState('my');
   const [newGroupName, setNewGroupName] = useState('');
   const [desc, setDesc] = useState('');
 
@@ -43,14 +43,12 @@ export default function Groups() {
     <div style={{background:'#e9eaed', minHeight:'100vh'}}>
       <Header />
       
-      {/* Top Tabs - Lian */}
       <div style={{background:'#3b5998', padding:'10px', display:'flex', gap:'5px'}}>
         <button onClick={()=>setTab('my')} style={{flex:1, padding:'12px', background: tab==='my' ? '#fff' : '#4c70ba', color: tab==='my' ? '#3b5998' : 'white', border:'none', fontWeight:'bold', fontSize:'18px', borderRadius:'3px'}}>My Groups</button>
         <button onClick={()=>setTab('all')} style={{flex:1, padding:'12px', background: tab==='all' ? '#fff' : '#4c70ba', color: tab==='all' ? '#3b5998' : 'white', border:'none', fontWeight:'bold', fontSize:'18px', borderRadius:'3px'}}>Group List</button>
         <button onClick={()=>setTab('create')} style={{flex:1, padding:'12px', background: tab==='create' ? '#fff' : '#4c70ba', color: tab==='create' ? '#3b5998' : 'white', border:'none', fontWeight:'bold', fontSize:'18px', borderRadius:'3px'}}>Create Group</button>
       </div>
 
-      {/* Content */}
       <div style={{maxWidth:'600px', margin:'0 auto', background:'white'}}>
         
         {tab !== 'create' && (
@@ -109,7 +107,7 @@ export default function Groups() {
               <input value={newGroupName} onChange={e=>setNewGroupName(e.target.value)} style={{width:'100%', padding:'14px', fontSize:'19px', margin:'8px 0 15px 0', border:'1px solid #bdc7d8'}} placeholder="Group hming" />
               
               <label style={{fontSize:'18px', fontWeight:'bold'}}>Description</label>
-              <textarea value={desc} onChange={e=>setDesc(e.target.value)} style={{width:'100%', padding:'14px', fontSize:'19px', margin:'8px 0 15px 0, border:'1px solid #bdc7d8', height:'100px'}} placeholder="Group chungchang..." />
+              <textarea value={desc} onChange={e=>setDesc(e.target.value)} style={{width:'100%', padding:'14px', fontSize:'19px', margin:'8px 0 15px 0', border:'1px solid #bdc7d8', height:'100px'}} placeholder="Group chungchang..." />
               
               <button type="submit" style={{width:'100%', padding:'14px', background:'#3b5998', color:'white', fontSize:'20px', fontWeight:'bold', border:'none'}}>Create Group</button>
             </form>
