@@ -20,41 +20,40 @@ export default function Header(){
     return ()=>{un1(); un2();};
   },[]);
 
-  const goSearch = ()=>{
-    if(q.trim()){
-      router.push(`/search?k=${encodeURIComponent(q.trim())}`);
-    }
-  };
+  const goSearch = ()=>{ if(q.trim()) router.push(`/search?k=${encodeURIComponent(q.trim())}`); };
   const onKey = (e)=>{ if(e.key==='Enter') goSearch(); };
+
+  const menuStyle = {color:'white',textDecoration:'none',fontWeight:'bold',fontSize:17,padding:'8px 10px',flex:'1',textAlign:'center'};
 
   return(
     <div style={{position:'fixed',top:0,left:0,right:0,zIndex:999,background:'#3b5998'}}>
-      {/* ROW 1: M ZIM + SEARCH TAWI + SEARCH BUTTON */}
-      <div style={{display:'flex',alignItems:'center',padding:'5px 8px',gap:6,background:'#3b5998'}}>
+      <div style={{display:'flex',alignItems:'center',padding:'6px 8px',gap:8,background:'#3b5998'}}>
         <Link href="/home" style={{textDecoration:'none'}}>
-          <div style={{background:'white',color:'#3b5998',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'900',fontSize:20,borderRadius:2,lineHeight:1}}>M</div>
+          <div style={{background:'white',color:'#3b5998',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'900',fontSize:20,borderRadius:2}}>M</div>
         </Link>
         <input 
           value={q}
           onChange={e=>setQ(e.target.value)}
           onKeyDown={onKey}
           placeholder="Zawng rawh..."
-          style={{flex:1,maxWidth:'55%',padding:'5px 8px',border:'none',borderRadius:2,fontSize:14,outline:'none'}}
+          style={{flex:1,padding:'8px 10px',height:34,fontSize:15,border:'none',borderRadius:2,outline:'none'}}
         />
-        <button onClick={goSearch} style={{background:'#f0f0f0',border:'1px solid #999',padding:'5px 12px',fontWeight:'bold',fontSize:13,borderRadius:2,cursor:'pointer',color:'#333'}}>Search</button>
+        <button onClick={goSearch} style={{background:'#f0f0f0',border:'1px solid #999',padding:'7px 14px',height:34,fontWeight:'bold',fontSize:14,borderRadius:2,color:'#333'}}>Search</button>
       </div>
 
-      {/* ROW 2: MENU - 2 LINE - BOLD LIAN - SEARCH TEL LO */}
-      <div style={{display:'flex',flexWrap:'wrap',gap:'0px',background:'#4a67a1',borderTop:'1px solid #355089',padding:'2px 0'}}>
-        <Link href="/home" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Home</Link>
-        <Link href="/profile" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Profile</Link>
-        <Link href="/friends" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Friends</Link>
-        <Link href="/message" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Message{msg>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:5,fontSize:12}}>{msg}</span>}</Link>
-        <Link href="/notifications" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Notification{noti>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:5,fontSize:12}}>{noti}</span>}</Link>
-        <Link href="/groups" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Groups</Link>
-        <Link href="/market" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Market</Link>
-        <Link href="/videos" style={{color:'white',textDecoration:'none',fontWeight:'bold',fontSize:15,padding:'7px 14px'}}>Videos</Link>
+      <div style={{display:'flex',flexWrap:'wrap',background:'#4a67a1',borderTop:'1px solid #355089'}}>
+        <div style={{display:'flex',width:'100%',justifyContent:'space-between'}}>
+          <Link href="/home" style={menuStyle}>Home</Link>
+          <Link href="/profile" style={menuStyle}>Profile</Link>
+          <Link href="/friends" style={menuStyle}>Friends</Link>
+          <Link href="/message" style={menuStyle}>Message{msg>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:4,fontSize:12}}>{msg}</span>}</Link>
+        </div>
+        <div style={{display:'flex',width:'100%',justifyContent:'space-between',borderTop:'1px solid #5a77b1'}}>
+          <Link href="/notifications" style={menuStyle}>Notification{noti>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:4,fontSize:12}}>{noti}</span>}</Link>
+          <Link href="/groups" style={menuStyle}>Groups</Link>
+          <Link href="/find-friends" style={menuStyle}>Find Friends</Link>
+        </div>
       </div>
     </div>
   )
-      }
+          }
