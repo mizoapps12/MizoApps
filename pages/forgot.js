@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '@/firebase';
 export default function Forgot(){
   const [email,setEmail]=useState(''); const [msg,setMsg]=useState(''); const [err,setErr]=useState('');
   const send = async()=>{ if(!email) return setErr('Email dah rawh!'); try{ await sendPasswordResetEmail(auth,email); setMsg('Reset link ka thawn e!'); }catch(e){ setErr(e.message); } }
