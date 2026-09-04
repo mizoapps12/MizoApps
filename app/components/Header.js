@@ -13,9 +13,9 @@ export default function Header(){
         </Link>
         <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
           <Link href="/search" style={{textDecoration:'none', padding:'8px', display:'flex'}}>
-            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="6"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="17" y2="17"></line>
             </svg>
           </Link>
           <button onClick={()=>setOpen(!open)} className="dot-btn">⋮</button>
