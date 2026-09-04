@@ -48,7 +48,7 @@ export default function Home() {
   };
 
   return(
-    <div style={{background:'#e9eaed',minHeight:'100vh',paddingTop:78}}>
+    <div style={{background:'#e9eaed',minHeight:'100vh',paddingTop:95}}>
       <Header/>
       <div style={{maxWidth:600,margin:'auto',padding:10}}>
         <div className="old-box" style={{padding:10}}>
