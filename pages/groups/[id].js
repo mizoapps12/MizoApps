@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { db, auth } from '../../firebase';
+import { db, auth } from '@/firebase';
 import Header from '../../components/Header';
 
 export default function GroupDetail(){
