@@ -1,8 +1,8 @@
-:root { --bg: #ffffff; --card: #ffffff; --text: #1a1a1a; }
+:root { --bg: #e8e8ec; --card: #ffffff; --text: #1a1a1a; }
 [data-theme='dark'] { --bg: #121212; --card: #1e1e1e; --text: #f0f0f0; }
 body { font-family: system-ui; background: var(--bg); color: var(--text); margin: 0; }
-.container { max-width: 900px; margin: auto; padding: 14px; padding-top: 68px; background: #ffffff; min-height: 100vh; }
-.card { background: #ffffff; border-radius: 16px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; }
+.container { max-width: 900px; margin: auto; padding: 14px; padding-top: 68px; background: #e8e8ec; min-height: 100vh; }
+.card { background: #ffffff; border-radius: 16px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 .btn { background: #111; color: white; padding: 10px 18px; border-radius: 10px; border: none; font-weight: bold; }
 
 .header { position: fixed; top: 0; left: 0; right: 0; height: 54px; background: linear-gradient(90deg,#000000,#1a1a1a,#2a2a2a); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 1001; }
