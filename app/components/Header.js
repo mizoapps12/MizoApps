@@ -14,7 +14,7 @@ export default function Header(){
         <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
           <Link href="/search" style={{textDecoration:'none', padding:'8px', display:'flex'}}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="7"></circle>
+              <circle cx="11" cy="11" r="10"></circle>
               <line x1="21" y1="21" x2="17" y2="17"></line>
             </svg>
           </Link>
