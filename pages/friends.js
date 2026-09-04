@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db, auth } from '@/firebase';
 export default function Friends(){
   const [users,setUsers]=useState([]); const [me,setMe]=useState(null); const [myData,setMyData]=useState(null); const [tab,setTab]=useState('all');
   useEffect(()=>{ auth.onAuthStateChanged(async u=>{ setMe(u); if(u){ onSnapshot(collection(db,"users"), s=> setUsers(s.docs.map(d=>d.data()).filter(x=>x.uid!==u.uid))); onSnapshot(doc(db,"users",u.uid), s=>{ if(s.exists()) setMyData(s.data()); }); } }); },[]);
