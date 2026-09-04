@@ -1,93 +1,36 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
-
-export default function Register() {
-  const router = useRouter();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-    router.push("/newsfeed");
-  };
-
-  return (
-    <>
-      <style jsx global>{`
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; overflow: hidden; }
-      `}</style>
-      <div style={{
-        background: "#e9eaed",
-        height: "100vh",
-        width: "100vw",
-        overflow: "hidden",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "15px",
-        fontFamily: "lucida grande, tahoma, verdana, arial, sans-serif"
-      }}>
-        <div style={{
-          background: "white",
-          maxWidth: "400px",
-          width: "100%",
-          padding: "22px",
-          border: "1px solid #bdc7d8",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-        }}>
-          <h2 style={{ fontSize: "22px", marginBottom: "6px" }}>Sign Up</h2>
-          <p style={{ fontSize: "13px", color: "#666", marginBottom: "18px" }}>It's free and always will be.</p>
-
-          <form onSubmit={handleRegister}>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-              style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #bdc7d8" }}
-            />
-            <input
-              type="text"
-              placeholder="Email or Phone"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              required
-              style={{ width: "100%", padding: "10px", marginBottom: "10px", border: "1px solid #bdc7d8" }}
-            />
-            <input
-              type="password"
-              placeholder="New Password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              required
-              style={{ width: "100%", padding: "10px", marginBottom: "14px", border: "1px solid #bdc7d8" }}
-            />
-
-            <p style={{ fontSize: "11px", color: "#777", marginBottom: "14px" }}>
-              By clicking Sign Up, you agree to our <a href="/terms" style={{ color: "#3b5998", textDecoration: "none" }}>Terms</a> and <a href="/privacy" style={{ color: "#3b5998", textDecoration: "none" }}>Privacy Policy</a>.
-            </p>
-
-            <button type="submit" style={{
-              background: "#69a74e",
-              border: "1px solid #3b6e22",
-              color: "white",
-              fontWeight: "bold",
-              padding: "9px 16px",
-              cursor: "pointer",
-              width: "100%"
-            }}>
-              Sign Up
-            </button>
-          </form>
-
-          <div style={{ textAlign: "center", marginTop: "15px", borderTop: "1px solid #ddd", paddingTop: "12px" }}>
-            <a onClick={() => router.push("/")} style={{ color: "#3b5998", fontSize: "13px", cursor: "pointer", textDecoration: "none" }}>
-              Already have an account? Log In
-            </a>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-                }
+import { useState } from 'react';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import Link from 'next/link';
+export default function Signup(){
+  const [form,setForm]=useState({name:'',village:'',dob:'',email:'',pass:'',cpass:''}); const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
+  const signup = async ()=>{
+    setError('');
+    if(!form.name.trim()) return setError('Hming dah rawh!'); if(!form.village.trim()) return setError('Khua / Village dah rawh!'); if(!form.dob) return setError('DoB dah rawh!');
+    if(!form.email) return setError('Email dah rawh!'); if(!/^\S+@\S+\.\S+$/.test(form.email)) return setError('Email format dik lo!');
+    if(form.pass.length<6) return setError('Password 6 aia tam ni rawh se!'); if(form.pass!==form.cpass) return setError('Password in ang lo!');
+    setLoading(true);
+    try{
+      const res = await createUserWithEmailAndPassword(auth, form.email, form.pass);
+      await updateProfile(res.user, {displayName: form.name});
+      await sendEmailVerification(res.user);
+      await setDoc(doc(db,"users",res.user.uid),{name:form.name,village:form.village,dob:form.dob,email:form.email,uid:res.user.uid,createdAt:new Date(),friends:[],friendRequests:[],online:true});
+      alert('Email ah Verification Link ka thawn e! Verify la, Login rawh!'); window.location.href='/';
+    }catch(e){ if(e.code==='auth/email-already-in-use') setError('He Email hi an hmang tawh!'); else setError(e.message); setLoading(false); }
+  }
+  return(
+    <div style={{background:'#e9eaed',minHeight:'100vh',padding:20}}><div style={{background:'white',maxWidth:400,margin:'auto',padding:20,border:'1px solid #ddd'}}>
+      <h2 style={{color:'#3b5998'}}>Sign Up - MizoApps</h2>
+      {error && <div style={{background:'#ffebe8',border:'1px solid #dd3c10',padding:8,marginBottom:10,fontSize:13}}>{error}</div>}
+      <input placeholder="Hming (Name)" onChange={e=>setForm({...form,name:e.target.value})} className="input-old"/>
+      <input placeholder="Khua (Village) - ex: Tura" onChange={e=>setForm({...form,village:e.target.value})} className="input-old"/>
+      <label style={{fontSize:12}}>DoB</label><input type="date" onChange={e=>setForm({...form,dob:e.target.value})} className="input-old"/>
+      <input placeholder="Email" onChange={e=>setForm({...form,email:e.target.value})} className="input-old"/>
+      <input type="password" placeholder="Password (6+)" onChange={e=>setForm({...form,pass:e.target.value})} className="input-old"/>
+      <input type="password" placeholder="Confirm Password" onChange={e=>setForm({...form,cpass:e.target.value})} className="input-old"/>
+      <button onClick={signup} disabled={loading} style={{width:'100%',background:'#69a74e',color:'white',padding:10,border:'none',fontWeight:'bold'}}>{loading?'Siam mek...':'Sign Up'}</button>
+      <div style={{textAlign:'center',marginTop:15,fontSize:13}}><Link href="/">Login ah kir leh</Link></div>
+    </div></div>
+  )
+        }
