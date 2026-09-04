@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db, auth } from '@/firebase';
 import Header from '../components/Header';
 
 export default function FindFriends(){
