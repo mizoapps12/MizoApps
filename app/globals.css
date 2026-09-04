@@ -3,8 +3,13 @@
 body { font-family: system-ui; background: var(--bg); color: var(--text); margin: 0; transition: all 0.3s; }
 .container { max-width: 900px; margin: auto; padding: 16px; padding-top: 80px; }
 .card { background: var(--card); border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.btn { background: var(--orange); color: white; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-.header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--card); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; }
-.dot-menu { position: absolute; top: 60px; right: 10px; background: var(--card); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 200px; overflow: hidden; }
-.dot-menu a, .dot-menu button { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; background: none; font-size: 16px; color: var(--text); cursor: pointer; }
-.dot-menu a:hover, .dot-menu button:hover { background: #f5f5f5; }
+.btn { background: linear-gradient(90deg,#ff6b00,#ff8c42); color: white; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+.header { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: linear-gradient(90deg,#ff6b00,#ff8e1f,#ffae42); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+.header-title { font-size: 26px; font-weight: 900; color: white; text-decoration: none; letter-spacing: 0.5px; }
+.dot-btn { background: rgba(255,255,255,0.2); border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 26px; font-weight: bold; cursor: pointer; color: white; }
+.dot-menu { position: absolute; top: 64px; right: 10px; background: var(--card); border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); width: 220px; overflow: hidden; animation: slideDown 0.2s; }
+@keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+.menu-item { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border: none; background: none; font-size: 15px; color: var(--text); cursor: pointer; text-decoration: none; }
+.menu-item:hover { background: #fff3e8; }
+.menu-divider { height: 1px; background: #eee; margin: 0; }
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; }
