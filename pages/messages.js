@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import { useEffect, useState } from 'react';
 import { collection, addDoc, onSnapshot, query, where, orderBy, updateDoc, doc } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db, auth } from '@/firebase';
 export default function Messages(){
   const [users,setUsers]=useState([]); const [chat,setChat]=useState([]); const [to,setTo]=useState(null); const [text,setText]=useState(''); const [me,setMe]=useState(null);
   useEffect(()=>{
