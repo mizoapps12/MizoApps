@@ -11,9 +11,12 @@ export default function Header(){
           <span style={{color:'#ff8c00', fontStyle:'italic', fontWeight:'800'}}>Mizo</span>
           <span style={{color:'#ffffff', fontWeight:'900'}}>Apps</span>
         </Link>
-        <div style={{display:'flex', alignItems:'center', gap:'2px'}}>
-          <Link href="/search" style={{textDecoration:'none', padding:'8px', display:'flex', alignItems:'center'}}>
-            <span style={{fontSize:'22px'}}>🔍</span>
+        <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+          <Link href="/search" style={{textDecoration:'none', padding:'8px', display:'flex'}}>
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="6"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
           </Link>
           <button onClick={()=>setOpen(!open)} className="dot-btn">⋮</button>
         </div>
@@ -37,4 +40,4 @@ export default function Header(){
       )}
     </>
   )
-        }
+}
