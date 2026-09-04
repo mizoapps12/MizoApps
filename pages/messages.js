@@ -1,58 +1,22 @@
-import { useState } from "react";
-import Link from "next/link";
-
-export default function MessagesPage() {
-  const [chats, setChats] = useState([
-    { id: 1, hming: "Lalrinawmi", thu: "Chibai! Eng nge i tih?", hun: "2m ago", unread: 2, online: true },
-    { id: 2, hming: "Zonunmawia", thu: "Ka lo kal dawn, lo nghak rawh", hun: "10m ago", unread: 0, online: true },
-    { id: 3, hming: "Mizo Zirlai Pawl", thu: "Lalhlupuia: Meeting kan nei dawn...", hun: "1h ago", unread: 5, online: false, group: true },
-    { id: 4, hming: "Liankima Sailo", thu: "Photo ka rawn thawn che", hun: "Yesterday", unread: 0, online: false },
-  ]);
-  const [selected, setSelected] = useState(null);
-
-  return (
-    <div style={{ background: "white", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <header className="fb-header">
-        <Link href="/newsfeed">‹ Back</Link>
-        <b>Messages / Thuchah 💬</b>
-        <span>✏️ New</span>
-      </header>
-
-      <div style={{ flex: 1, display: "flex" }}>
-        {/* Chat List */}
-        <div style={{ width: selected? "35%" : "100%", borderRight: "1px solid #ddd" }}>
-          <div style={{ padding: "8px" }}><input placeholder="Search messages..." style={{ width: "100%", padding: "8px", border: "1px solid #ddd", borderRadius: "20px" }} /></div>
-          {chats.map((c) => (
-            <div key={c.id} onClick={() => setSelected(c)} style={{ padding: "10px 12px", borderBottom: "1px solid #f0f0f0", background: selected?.id === c.id? "#e9f0ff" : "white", cursor: "pointer", display: "flex", gap: "10px" }}>
-              <div style={{ width: "45px", height: "45px", background: c.group? "#5cb85c" : "#3b5998", borderRadius: "50%", position: "relative", flexShrink: 0 }}>
-                {c.online && <div style={{ width: "10px", height: "10px", background: "#4CAF50", borderRadius: "50%", position: "absolute", bottom: "0", right: "0", border: "2px solid white" }}></div>}
-              </div>
-              <div style={{ flex: 1, overflow: "hidden" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><b style={{ fontSize: "14px" }}>{c.hming}</b><small style={{ color: "gray", fontSize: "11px" }}>{c.hun}</small></div>
-                <div style={{ fontSize: "13px", color: "gray", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.thu}</div>
-              </div>
-              {c.unread > 0 && <div style={{ background: "#3b5998", color: "white", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "bold" }}>{c.unread}</div>}
-            </div>
-          ))}
-        </div>
-
-        {/* Chat Window */}
-        {selected && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <div style={{ padding: "12px", borderBottom: "1px solid #ddd", background: "#f6f7f8", display: "flex", justifyContent: "space-between" }}>
-              <b>{selected.hming}</b><span onClick={() => setSelected(null)} style={{ cursor: "pointer" }}>✕</span>
-            </div>
-            <div style={{ flex: 1, padding: "15px", background: "#e9eaed" }}>
-              <div style={{ background: "white", padding: "10px", borderRadius: "15px", maxWidth: "70%", marginBottom: "10px" }}>{selected.thu}</div>
-              <div style={{ background: "#3b5998", color: "white", padding: "10px", borderRadius: "15px", maxWidth: "70%", marginLeft: "auto" }}>Awle, ka lo nghak ang che!</div>
-            </div>
-            <div style={{ padding: "10px", borderTop: "1px solid #ddd", display: "flex", gap: "8px" }}>
-              <input placeholder="Type a message..." style={{ flex: 1, padding: "10px", border: "1px solid #ddd", borderRadius: "20px" }} />
-              <button style={{ background: "#3b5998", color: "white", border: "none", padding: "10px 15px", borderRadius: "20px" }}>Send</button>
-            </div>
-          </div>
-        )}
+import Header from '../components/Header';
+import { useEffect, useState } from 'react';
+import { collection, addDoc, onSnapshot, query, where, orderBy, updateDoc, doc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+export default function Messages(){
+  const [users,setUsers]=useState([]); const [chat,setChat]=useState([]); const [to,setTo]=useState(null); const [text,setText]=useState(''); const [me,setMe]=useState(null);
+  useEffect(()=>{
+    auth.onAuthStateChanged(u=>{ setMe(u); onSnapshot(collection(db,"users"), s=> setUsers(s.docs.map(d=>d.data()).filter(x=>x.uid!==u?.uid))); });
+    onSnapshot(query(collection(db,"messages"), orderBy("time","desc")), s=> setChat(s.docs.map(d=>({id:d.id,...d.data()}))));
+  },[]);
+  const send = async ()=>{ if(!text.trim()||!to||!me) return; await addDoc(collection(db,"messages"),{from:me.uid,to:to.uid,text,time:new Date(),read:false}); await addDoc(collection(db,"notifications"),{to:to.uid,from:me.uid,text:`${me.displayName} in message a thawn che`,read:false,time:new Date()}); setText(''); }
+  const openChat = async (u)=>{ setTo(u); chat.filter(c=>c.from===u.uid && c.to===me.uid && !c.read).forEach(async m=>{ await updateDoc(doc(db,"messages",m.id),{read:true}); }); }
+  const myChat = chat.filter(c=> (c.from===me?.uid && c.to===to?.uid) || (c.from===to?.uid && c.to===me?.uid)).reverse();
+  return(
+    <div style={{background:'#e9eaed',minHeight:'100vh',paddingTop:50}}><Header/>
+      <div style={{display:'flex',maxWidth:800,margin:'auto',height:'calc(100vh - 50px)'}}>
+        <div style={{width:250,background:'white',borderRight:'1px solid #ddd',overflowY:'auto'}}>{users.map(u=><div key={u.uid} onClick={()=>openChat(u)} style={{padding:10,borderBottom:'1px solid #eee',cursor:'pointer',background:to?.uid===u.uid?'#e9eaed':'white'}}>{u.name} - {u.village}{chat.filter(c=>c.from===u.uid && c.to===me?.uid && !c.read).length>0 && <span style={{background:'#f8e71c',fontSize:10,padding:'2px 4px',marginLeft:5}}>(1)</span>}</div>)}</div>
+        <div style={{flex:1,background:'white',display:'flex',flexDirection:'column'}}>{to?<><div style={{padding:10,borderBottom:'1px solid #ddd',fontWeight:'bold'}}>{to.name}</div><div style={{flex:1,overflowY:'auto',padding:10}}>{myChat.map(m=><div key={m.id} style={{textAlign:m.from===me.uid?'right':'left',marginBottom:8}}><span style={{background:m.from===me.uid?'#3b5998':'#eee',color:m.from===me.uid?'white':'black',padding:'5px 10px',borderRadius:10,display:'inline-block'}}>{m.text}</span></div>)}</div><div style={{padding:10,display:'flex',gap:5}}><input value={text} onChange={e=>setText(e.target.value)} placeholder="Message..." style={{flex:1,padding:8,border:'1px solid #ddd'}}/><button onClick={send} className="blue-btn">Thawn</button></div></>:<div style={{padding:20,textAlign:'center',color:'#999'}}>Mi thlang rawh</div>}</div>
       </div>
     </div>
-  );
+  )
 }
