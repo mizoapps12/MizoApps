@@ -1,15 +1,13 @@
-:root { --bg: #fffaf0; --card: #ffffff; --text: #1a1a1a; }
+:root { --bg: #fef9f0; --card: #ffffff; --text: #1a1a1a; }
 [data-theme='dark'] { --bg: #121212; --card: #1e1e1e; --text: #f0f0f0; }
 body { font-family: system-ui; background: var(--bg); color: var(--text); margin: 0; }
 .container { max-width: 900px; margin: auto; padding: 14px; padding-top: 68px; }
-.card { background: var(--card); border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.btn { background: #111; color: white; padding: 10px 18px; border-radius: 8px; border: none; font-weight: bold; }
-
-.header { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: linear-gradient(90deg,#000000,#1c1c1c,#2b2b2b); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 1001; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-.header-logo { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 26px; font-weight: 900; text-decoration: none; letter-spacing: 0.5px; display:flex; }
-.dot-btn { background: rgba(255,255,255,0.12); border: none; width: 36px; height: 36px; border-radius: 8px; font-size: 24px; font-weight: 900; cursor: pointer; color: white; display:flex; align-items:center; justify-content:center; }
-.dot-menu { position: fixed; top: 60px; right: 8px; background: white; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 250px; overflow: hidden; z-index: 2000; }
+.card { background: var(--card); border-radius: 16px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.btn { background: #111; color: white; padding: 10px 18px; border-radius: 10px; border: none; font-weight: bold; }
+.header { position: fixed; top: 0; left: 0; right: 0; height: 54px; background: linear-gradient(90deg,#000000,#1a1a1a,#2a2a2a); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; z-index: 1001; }
+.header-logo { font-family: 'Segoe UI', sans-serif; font-size: 26px; font-weight: 900; text-decoration: none; letter-spacing: 0.5px; }
+.dot-btn { background: transparent; border: none; font-size: 26px; font-weight: 900; cursor: pointer; color: white; padding: 8px; letter-spacing: 2px; }
+.dot-menu { position: fixed; top: 58px; right: 8px; background: white; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 250px; overflow: hidden; z-index: 2000; }
 .menu-item { display: flex; align-items: center; gap: 18px; width: 100%; text-align: left; padding: 15px 18px; border: none; background: white; font-size: 16px; font-weight: 700; color: #111; cursor: pointer; text-decoration: none; }
-.menu-item:active { background: #f0f0f0; }
 .menu-divider { height: 1px; background: #f0f0f0; }
-.overlay { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 999; background: rgba(0,0,0,0.1); }
+.overlay { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 999; background: transparent; }
