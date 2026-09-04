@@ -1,5 +1,10 @@
-body{font-family:system-ui;background:#fffaf0;color:#222;margin:0}
-.container{max-width:900px;margin:auto;padding:16px}
-.card{background:white;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.btn{background:#ff6b00;color:white;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;font-weight:bold}
-a{color:#ff6b00;text-decoration:none}
+:root { --bg: #fffaf0; --card: #ffffff; --text: #1a1a1a; --orange: #ff6b00; }
+[data-theme='dark'] { --bg: #121212; --card: #1e1e1e; --text: #f0f0f0; }
+body { font-family: system-ui; background: var(--bg); color: var(--text); margin: 0; transition: all 0.3s; }
+.container { max-width: 900px; margin: auto; padding: 16px; padding-top: 80px; }
+.card { background: var(--card); border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.btn { background: var(--orange); color: white; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+.header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--card); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; }
+.dot-menu { position: absolute; top: 60px; right: 10px; background: var(--card); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 200px; overflow: hidden; }
+.dot-menu a, .dot-menu button { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; background: none; font-size: 16px; color: var(--text); cursor: pointer; }
+.dot-menu a:hover, .dot-menu button:hover { background: #f5f5f5; }
