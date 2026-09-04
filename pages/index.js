@@ -1,50 +1,43 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
-import { supabase } from "../lib/supabase";
-
-export default function Login() {
-  const [isSignup, setIsSignup] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
-
-  const handleSignup = async () => {
-    if(!name || !email || !phone || !password) return alert("Fill all!");
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if(error) return alert(error.message);
-    await supabase.from("profiles").insert([{ id: data.user.id, full_name: name, email, phone }]);
-    alert("Account siam a ni! Login rawh");
-    setIsSignup(false);
-  };
-
-  const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if(error) return alert(error.message);
-    router.push("/newsfeed");
-  };
-
-  return (
-    <div style={{ background: "#e9eaed", minHeight: "100vh", fontFamily: "lucida grande" }}>
-      <div style={{ background: "#3b5998", height: "40px", display: "flex", alignItems: "center", padding: "0 15px" }}>
-        <h2 style={{ color: "white", fontSize: "28px", fontWeight: "bold" }}>mizoapps</h2>
-      </div>
-      <div style={{ maxWidth: "400px", margin: "40px auto", background: "white", border: "1px solid #bdc7d8", padding: "20px" }}>
-        <h3 style={{ marginBottom: "15px", color: "#333" }}>{isSignup ? "Sign Up" : "Log In"}</h3>
-        {isSignup && <input placeholder="Full Name" value={name} onChange={e=>setName(e.target.value)} style={inputStyle} />}
-        <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} style={inputStyle} />
-        {isSignup && <input placeholder="Phone Number (e.g. 9862...)" value={phone} onChange={e=>setPhone(e.target.value)} style={inputStyle} />}
-        <input placeholder="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} style={inputStyle} />
-        
-        <button onClick={isSignup ? handleSignup : handleLogin} style={{ width: "100%", background: "#5b74a8", color: "white", fontWeight: "bold", border: "1px solid #2f477a", padding: "8px", marginTop: "10px", cursor: "pointer" }}>
-          {isSignup ? "Sign Up" : "Log In"}
-        </button>
-        <p onClick={()=>setIsSignup(!isSignup)} style={{ textAlign: "center", marginTop: "12px", fontSize: "13px", color: "#3b5998", cursor: "pointer" }}>
-          {isSignup ? "Already have account? Log In" : "Create New Account - Email + Phone"}
-        </p>
+import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import Link from 'next/link';
+export default function Login(){
+  const [email,setEmail]=useState(''); const [pass,setPass]=useState(''); const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
+  const login = async () => {
+    setError('');
+    if(!email) return setError('Email dah rawh!');
+    if(!/^\S+@\S+\.\S+$/.test(email)) return setError('Email format dik lo! example@mizo.com ang ni rawh se');
+    if(!pass) return setError('Password dah rawh!');
+    if(pass.length<6) return setError('Password tawi lutuk! 6 aia tam ni rawh se');
+    setLoading(true);
+    try{
+      const cred = await signInWithEmailAndPassword(auth,email,pass);
+      if(!cred.user.emailVerified){ setError('Email verify hmasa rawh! I Email ah Link ka thawn tawh kha!'); setLoading(false); return; }
+      window.location.href='/home';
+    }catch(e){
+      if(e.code==='auth/user-not-found') setError('He Email hi a awm lo!');
+      else if(e.code==='auth/wrong-password') setError('Password dik lo!');
+      else if(e.code==='auth/invalid-credential') setError('Email emaw Password dik lo!');
+      else setError(e.message);
+      setLoading(false);
+    }
+  }
+  return(
+    <div style={{background:'#3b5998',minHeight:'100vh',display:'flex',justifyContent:'center',alignItems:'center',padding:10}}>
+      <div style={{background:'white',padding:25,width:360,border:'1px solid #ddd'}}>
+        <h1 style={{color:'#3b5998',textAlign:'center',margin:'0 0 15px 0'}}>MizoApps</h1>
+        <div style={{fontSize:13,color:'#666',textAlign:'center',marginBottom:15}}>Old Facebook ang - Mizo tan bik - A chak ber</div>
+        {error && <div style={{background:'#ffebe8',border:'1px solid #dd3c10',padding:8,marginBottom:10,fontSize:13}}>{error}</div>}
+        <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="input-old" />
+        <input type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password" className="input-old" />
+        <button onClick={login} disabled={loading} style={{width:'100%',background:'#3b5998',color:'white',padding:10,border:'none',fontWeight:'bold',cursor:'pointer'}}>{loading?'Lut mek...':'Log In'}</button>
+        <div style={{textAlign:'center',marginTop:10,fontSize:13}}>
+          <Link href="/forgot" style={{color:'#3b5998'}}>Forgot Password?</Link><hr style={{margin:'15px 0'}}/>
+          <Link href="/signup"><button style={{background:'#69a74e',color:'white',padding:10,border:'none',fontWeight:'bold',cursor:'pointer'}}>Create New Account</button></Link>
+        </div>
+        <div style={{textAlign:'center',marginTop:20,fontSize:11,color:'#666'}}><Link href="/privacy">Privacy</Link> · <Link href="/terms">Terms and Condition</Link></div>
       </div>
     </div>
-  );
+  )
 }
-const inputStyle = { width: "100%", padding: "8px", border: "1px solid #bdc7d8", marginBottom: "8px", fontSize: "13px" };
