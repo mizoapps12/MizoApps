@@ -1,8 +1,5 @@
-/* MizoApps 2012 Global Styles - Facebook hlui ang */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif; background: #e9eaed; color: #333; }
-.fb-header { background: #3b5998; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-.fb-card { background: white; border: 1px solid #d0d1d5; border-radius: 3px; margin: 8px; padding: 12px; }
-.fb-button { background: #3b5998; color: white; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 2px; }
-.fb-button:hover { background: #2d4373; }
-.fb-input { width: 100%; padding: 10px; border: 1px solid #bdc7d8; border-radius: 2px; font-size: 14px; }
+body{margin:0;font-family:lucida grande,tahoma,verdana,arial,sans-serif;background:#e9eaed}
+.old-box{background:white;border:1px solid #dddfe2;border-radius:2px}
+.blue-btn{background:#3b5998;color:white;border:none;padding:7px 15px;font-weight:bold;cursor:pointer}
+.green-btn{background:#69a74e;color:white;border:none;padding:7px 15px;font-weight:bold;cursor:pointer}
+.input-old{width:100%;padding:8px;border:1px solid #bdc7d8;margin-bottom:10px;box-sizing:border-box}
