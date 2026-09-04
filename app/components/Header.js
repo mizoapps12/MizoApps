@@ -11,14 +11,19 @@ export default function Header(){
           <span style={{color:'#ff8c00', fontStyle:'italic', fontWeight:'800'}}>Mizo</span>
           <span style={{color:'#ffffff', fontWeight:'900'}}>Apps</span>
         </Link>
-        <button onClick={()=>setOpen(!open)} className="dot-btn">⋮</button>
+        <div style={{display:'flex', alignItems:'center', gap:'2px'}}>
+          <Link href="/search" style={{textDecoration:'none', padding:'8px', display:'flex', alignItems:'center'}}>
+            <span style={{fontSize:'22px'}}>🔍</span>
+          </Link>
+          <button onClick={()=>setOpen(!open)} className="dot-btn">⋮</button>
+        </div>
       </div>
 
       {open && (
         <>
           <div className="overlay" onClick={()=>setOpen(false)}></div>
           <div className="dot-menu">
-            <Link href="/" className="menu-item" onClick={()=>setOpen(false)}><span>📚</span><span>Category</span></Link>
+            <Link href="/category" className="menu-item" onClick={()=>setOpen(false)}><span>📚</span><span>Category</span></Link>
             <div className="menu-divider"></div>
             <Link href="/admin" className="menu-item" onClick={()=>setOpen(false)}><span>🔐</span><span>Admin Login</span></Link>
             <div className="menu-divider"></div>
