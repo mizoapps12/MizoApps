@@ -2,7 +2,7 @@
 import Header from '../components/Header';
 import { useEffect, useState } from 'react';
 import { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db, auth } from '@/firebase';
 
 export default function Home() {
   const [user,setUser]=useState(null);
