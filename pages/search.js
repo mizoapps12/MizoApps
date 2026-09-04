@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '@/firebase';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
