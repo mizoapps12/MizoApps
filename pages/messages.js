@@ -1,4 +1,4 @@
-import Header from '../components/Header';
+import Header from '@/components/Header';
 import { useEffect, useState } from 'react';
 import { collection, addDoc, onSnapshot, query, where, orderBy, updateDoc, doc } from 'firebase/firestore';
 import { db, auth } from '@/firebase';
