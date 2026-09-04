@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { auth, db } from '@/firebase';
 import Link from 'next/link';
 export default function Signup(){
   const [form,setForm]=useState({name:'',village:'',dob:'',email:'',pass:'',cpass:''}); const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
