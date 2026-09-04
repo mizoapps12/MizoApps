@@ -36,24 +36,24 @@ export default function Header(){
           onChange={e=>setQ(e.target.value)}
           onKeyDown={onKey}
           placeholder="Zawng rawh..."
-          style={{flex:1,padding:'8px 10px',height:34,fontSize:15,border:'none',borderRadius:2,outline:'none'}}
+          style={{flex:1,padding:'0 10px',height:30,fontSize:14,border:'none',borderRadius:2,outline:'none'}}
         />
-        <button onClick={goSearch} style={{background:'#f0f0f0',border:'1px solid #999',padding:'7px 14px',height:34,fontWeight:'bold',fontSize:14,borderRadius:2,color:'#333'}}>Search</button>
+        <button onClick={goSearch} style={{background:'#f0f0f0',border:'1px solid #999',padding:'0 14px',height:30,fontWeight:'bold',fontSize:14,borderRadius:2,color:'#333'}}>Search</button>
       </div>
 
-      <div style={{display:'flex',flexWrap:'wrap',background:'#4a67a1',borderTop:'1px solid #355089'}}>
+      <div style={{display:'flex',flexWrap:'wrap',background:'#3b5998'}}>
         <div style={{display:'flex',width:'100%',justifyContent:'space-between'}}>
           <Link href="/home" style={menuStyle}>Home</Link>
           <Link href="/profile" style={menuStyle}>Profile</Link>
-          <Link href="/friends" style={menuStyle}>Friends</Link>
+          <Link href="/notifications" style={menuStyle}>Notification{noti>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:4,fontSize:12}}>{noti}</span>}</Link>
           <Link href="/message" style={menuStyle}>Message{msg>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:4,fontSize:12}}>{msg}</span>}</Link>
         </div>
-        <div style={{display:'flex',width:'100%',justifyContent:'space-between',borderTop:'1px solid #5a77b1'}}>
-          <Link href="/notifications" style={menuStyle}>Notification{noti>0 && <span style={{background:'red',color:'white',padding:'1px 5px',borderRadius:3,marginLeft:4,fontSize:12}}>{noti}</span>}</Link>
+        <div style={{display:'flex',width:'100%',justifyContent:'space-between'}}>
+          <Link href="/friends" style={menuStyle}>Friends</Link>
           <Link href="/groups" style={menuStyle}>Groups</Link>
           <Link href="/find-friends" style={menuStyle}>Find Friends</Link>
         </div>
       </div>
     </div>
   )
-          }
+}
