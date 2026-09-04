@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Header from '../components/Header';
+import Header from '@/components/Header';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 import Link from 'next/link';
