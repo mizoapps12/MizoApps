@@ -22,6 +22,7 @@ export default function Header(){
   const onKey = (e)=>{ if(e.key==='Enter') goSearch(); };
   const m = {color:'white',textDecoration:'none',fontWeight:'bold',fontSize:16};
   return(
+    <>
     <div style={{position:'fixed',top:0,left:0,right:0,zIndex:999,background:'#3b5998'}}>
       <div style={{display:'flex',alignItems:'center',padding:'6px 8px',gap:8,background:'#3b5998'}}>
         <Link href="/home" style={{textDecoration:'none'}}><div style={{background:'white',color:'#3b5998',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'900',fontSize:20,borderRadius:2}}>M</div></Link>
@@ -42,5 +43,8 @@ export default function Header(){
         </div>
       </div>
     </div>
+    {/* HEI HI A PAWIMAWH - Header in a hliah loh nan spacer */}
+    <div style={{height:85}}></div>
+    </>
   )
-}
+  }
