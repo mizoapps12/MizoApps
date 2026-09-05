@@ -1,8 +1,8 @@
-    'use client'
+'use client'
 import { useState, useEffect } from 'react'
 import { db, auth } from '@/lib/firebase'
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
-import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc, arrayUnion, serverTimestamp, orderBy, query } from 'firebase/firestore'
+import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc, arrayUnion, serverTimestamp, orderBy, query, writeBatch, where } from 'firebase/firestore'
 import { useSettings } from '../components/SettingsContext'
 
 const DEFAULT_CATS = ['Love Story','Funny Story','Horror Story','Science Fiction','Life Lesson Story','Short story','Motivational Story','Mizo Thawnthu','Mimal Chanchin','Thu tha lawrkhawm','Lawrkhawm','Pathian thu']
@@ -22,6 +22,7 @@ export default function Admin(){
   const [subInputs,setSubInputs]=useState({})
   const [editId,setEditId]=useState(null)
   const [editName,setEditName]=useState('')
+  const [saving,setSaving]=useState(false)
 
   useEffect(()=>{ const unsub = onAuthStateChanged(auth, (u)=>{ setUser(u); setLoading(false) }); return ()=>unsub() },[])
 
@@ -47,7 +48,47 @@ export default function Admin(){
   const delCat=async(id)=>{ if(confirm('Delete?')){ await deleteDoc(doc(db,'categories',id)); loadCats() } }
   const delSub=async(catId, subName)=>{ const cat=categories.find(c=>c.id===catId); const newSubs=(cat.subcategories||[]).filter(s=>s!==subName); await updateDoc(doc(db,'categories',catId),{subcategories:newSubs}); loadCats() }
   const startEdit=(c)=>{ setEditId(c.id); setEditName(c.name) }
-  const saveEdit=async()=>{ if(!editName.trim()) return; await updateDoc(doc(db,'categories',editId),{name:editName.trim()}); setEditId(null); setEditName(''); loadCats() }
+
+  // HEI HI A DIK TAWH - STORY ZAWNG ZAWNG A THLAK VEK ANG
+  const saveEdit=async()=>{
+    if(!editName.trim()) return
+    const oldCat = categories.find(c=>c.id===editId)
+    if(!oldCat) return
+    const oldName = oldCat.name
+    const newName = editName.trim()
+    if(oldName === newName){ setEditId(null); return }
+
+    if(!confirm(`"${oldName}" -> "${newName}" ah thlak i duh em?\nStory zawng zawng a inthlak ang!`)) return
+
+    setSaving(true)
+    try{
+      // 1. categories collection thlak
+      await updateDoc(doc(db,'categories',editId),{name:newName})
+
+      // 2. stories zawng zawng thlak - Hei hi a pawimawh ber!
+      const storySnap = await getDocs(query(collection(db,'stories'), where('category','==', oldName)))
+      const batch = writeBatch(db)
+      storySnap.docs.forEach(d=>{
+        batch.update(doc(db,'stories', d.id), { category: newName })
+      })
+      await batch.commit()
+
+      // 3. categoryMap siam - Home page in Fiamthu a hriat theih nan
+      await addDoc(collection(db,'categoryMap'), {
+        original: oldName,
+        display: newName,
+        createdAt: serverTimestamp()
+      })
+
+      alert(`Done! ${storySnap.size} story "${newName}" ah thlak a ni!`)
+      setEditId(null)
+      setEditName('')
+      loadCats()
+    }catch(e){
+      alert('Error: '+e.message)
+    }
+    setSaving(false)
+  }
 
   const box = { width:'100%', height:'52px', borderRadius:'14px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#1e1e1e':'white', padding:'0 16px', fontSize:'14px', outline:'none', boxSizing:'border-box', color: dark?'white':'#111' }
   const boxArea = { width:'100%', padding:'14px', borderRadius:'14px', border: dark?'1px solid #444':'1px solid #ddd', fontSize:'14px', boxSizing:'border-box', background: dark?'#1e1e1e':'white', color: dark?'white':'#111' }
@@ -66,7 +107,6 @@ export default function Admin(){
 
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'75px'}}>
-      {/* TAB */}
       <div style={{margin:'12px', background:'#111', borderRadius:'16px', padding:'6px', display:'flex', gap:'6px'}}>
         <button onClick={()=>setTab('write')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='write'?'white':'transparent', color:tab==='write'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>✍️ WRITE STORY</button>
         <button onClick={()=>setTab('manage')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='manage'?'white':'transparent', color:tab==='manage'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>📚 MANAGE CATEGORY</button>
@@ -103,7 +143,7 @@ export default function Admin(){
               {categories.map(c=>(
                 <div key={c.id} style={{background: dark?'#1e1e1e':'white',padding:'14px',borderRadius:'14px',marginBottom:'12px',border: dark?'1px solid #333':'1px solid #eee'}}>
                   {editId===c.id? (
-                    <div style={{display:'flex',gap:'6px'}}><input value={editName} onChange={e=>setEditName(e.target.value)} style={{flex:1, padding:'10px', borderRadius:'10px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#252525':'white', color: dark?'white':'#111'}}/><button onClick={saveEdit} style={{background:'#22c55e',color:'white',border:'none',padding:'0 14px',borderRadius:'10px',fontWeight:'700'}}>Save</button><button onClick={()=>setEditId(null)} style={{background: dark?'#333':'#eee',color: dark?'white':'#111',border:'none',padding:'0 12px',borderRadius:'10px'}}>X</button></div>
+                    <div style={{display:'flex',gap:'6px'}}><input value={editName} onChange={e=>setEditName(e.target.value)} style={{flex:1, padding:'10px', borderRadius:'10px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#252525':'white', color: dark?'white':'#111'}}/><button disabled={saving} onClick={saveEdit} style={{background:saving?'#999':'#22c55e',color:'white',border:'none',padding:'0 14px',borderRadius:'10px',fontWeight:'700'}}>{saving?'Saving...':'Save'}</button><button onClick={()=>setEditId(null)} style={{background: dark?'#333':'#eee',color: dark?'white':'#111',border:'none',padding:'0 12px',borderRadius:'10px'}}>X</button></div>
                   ) : (
                     <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <b style={{fontSize:'15px', color: dark?'white':'#111'}}>{c.name} <span style={{color: dark?'#888':'#888', fontSize:'11px', fontWeight:'400'}}>({c.subcategories?.length||0})</span></b>
@@ -129,4 +169,4 @@ export default function Admin(){
       </div>
     </div>
   )
-    }
+                                                         }
