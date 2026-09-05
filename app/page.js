@@ -29,7 +29,8 @@ export default function HomePage(){
     const load=async()=>{
       const snap = await getDocs(query(collection(db,'stories'), orderBy('createdAt','desc')))
       setStories(snap.docs.map(d=>({id:d.id,...d.data()})))
-      // Admin category map la
+      
+      // ADMIN atanga category hming thlak la tur
       const mapSnap = await getDocs(collection(db,'categoryMap'))
       const m = {}
       mapSnap.docs.forEach(d=>{
@@ -90,7 +91,7 @@ export default function HomePage(){
                     {displayCategory}
                   </span>
                   {story.subCategory && (
-                    <><span>{'>'}</span><span onClick={(e)=>{ e.stopPropagation(); router.push(`/series/${encodeURIComponent(story.subCategory)}`) }} style={{cursor:'pointer', color:'#16a34a', fontWeight:'800'}}>{story.subCategory}</span></>
+                    <><span>{'>'}</span><span onClick={(e)=>{ e.stopPropagation(); sessionStorage.setItem('home-scroll-y', window.scrollY.toString()); sessionStorage.setItem('home-visible', visible.toString()); router.push(`/series/${encodeURIComponent(story.subCategory)}`) }} style={{cursor:'pointer', color:'#16a34a', fontWeight:'800'}}>{story.subCategory}</span></>
                   )}
                 </div>
                 <div style={{fontSize:'12.5px', fontWeight:'600', color: dark?'#888':'#888'}}>{timeAgo(story.createdAt)}</div>
