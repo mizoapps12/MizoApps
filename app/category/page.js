@@ -51,7 +51,7 @@ export default function CategoriesPage(){
               <div style={{width:'48px', height:'48px', borderRadius:'12px', background: dark?'#2a2a2a':'#f2f2f7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px'}}>📚</div>
               <div style={{flex:1, marginLeft:'14px'}}>
                 <div style={{fontWeight:'700', fontSize:'16px', color: dark?'#fff':'#111'}}>{cat.name}</div>
-                <div style={{fontSize:'11px', color: dark?'#888':'#888'}}>{catStories.length} stories {hasSub? `• ${cat.subcategories.length} sub` : ''}</div>
+                <div style={{fontSize:'14px', color: dark?'#888':'#888'}}>{catStories.length} stories {hasSub? `• ${cat.subcategories.length} sub` : ''}</div>
               </div>
               <div style={{width:'32px', height:'32px', borderRadius:'50%', background: dark?'#2a2a2a':'#f2f2f7', color: dark?'#fff':'#111', display:'flex', alignItems:'center', justifyContent:'center', transform:isOpen?'rotate(90deg)':'rotate(0deg)', transition:'0.2s'}}>›</div>
             </div>
@@ -62,10 +62,10 @@ export default function CategoriesPage(){
                 {/* Sub Categories */}
                 {hasSub ? (
                   <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
-                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>All ({catStories.length})</button>
+                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'13px', fontWeight:'700'}}>All ({catStories.length})</button>
                     {cat.subcategories.map((sub,i)=>{
                       const count = getStoriesByCat(cat.name, sub).length
-                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>{sub} ({count})</button>
+                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'13px', fontWeight:'700'}}>{sub} ({count})</button>
                     })}
                   </div>
                 ) : null}
