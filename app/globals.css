@@ -2,28 +2,27 @@
   --bg: #e8e8ec; 
   --card: #ffffff; 
   --text: #1a1a1a; 
+  --text2: #666;
   --border: #eee;
-  --header-bg: linear-gradient(90deg,#000000,#1a1a1a,#2a2a2a);
+  --link: #6d28d9;
 }
 
 [data-theme='dark'], .dark-mode { 
   --bg: #121212; 
   --card: #1e1e1e; 
   --text: #f0f0f0; 
+  --text2: #aaa;
   --border: #333;
-  --header-bg: #1e1e1e;
+  --link: #a78bfa;
 }
 
-html { 
-  transition: font-size 0.2s ease; 
-}
+html { transition: font-size 0.2s ease; }
 
 body { 
   font-family: system-ui, -apple-system, sans-serif; 
   background: var(--bg) !important; 
   color: var(--text) !important; 
   margin: 0; 
-  transition: background 0.3s, color 0.3s;
 }
 
 .container { 
@@ -33,7 +32,6 @@ body {
   padding-top: 68px; 
   background: var(--bg) !important; 
   min-height: 100vh; 
-  transition: background 0.3s;
 }
 
 .card { 
@@ -44,107 +42,70 @@ body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.06); 
   border: 1px solid var(--border);
   color: var(--text) !important;
-  transition: background 0.3s, color 0.3s;
 }
 
-.btn { 
-  background: #111; 
-  color: white; 
-  padding: 10px 18px; 
-  border-radius: 10px; 
-  border: none; 
-  font-weight: bold; 
-  cursor: pointer;
-}
-
-/* HEADER - Dark mode support */
+/* HEADER */
 .header { 
   position: fixed; 
   top: 0; left: 0; right: 0; 
   height: 54px; 
-  background: var(--header-bg); 
+  background: #111 !important;
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
   padding: 0 12px; 
   z-index: 1001; 
-  transition: background 0.3s;
 }
+.header-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: white !important; }
+.dot-btn { background: transparent; border: none; font-size: 26px; font-weight: 900; cursor: pointer; color: white; padding: 8px; }
+.dot-menu { position: fixed; top: 58px; right: 8px; background: var(--card) !important; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 250px; overflow: hidden; z-index: 2000; border: 1px solid var(--border); }
+.menu-item { display: flex; align-items: center; gap: 18px; width: 100%; padding: 15px 18px; border: none; background: var(--card) !important; font-size: 16px; font-weight: 700; color: var(--text) !important; cursor: pointer; text-decoration: none; }
+.menu-divider { height: 1px; background: var(--border); }
+.overlay { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 999; }
 
-.header-logo { 
-  font-family: 'Segoe UI', sans-serif; 
-  font-size: 26px; 
-  font-weight: 900; 
-  text-decoration: none; 
-}
+/* --- DARK MODE FIX - A TAWP BER AH DAH RAWH --- */
 
-.dot-btn { 
-  background: transparent; 
-  border: none; 
-  font-size: 26px; 
-  font-weight: 900; 
-  cursor: pointer; 
-  color: white; 
-  padding: 8px; 
-}
-
-.dot-menu { 
-  position: fixed; 
-  top: 58px; 
-  right: 8px; 
-  background: var(--card) !important; 
-  border-radius: 14px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
-  width: 250px; 
-  overflow: hidden; 
-  z-index: 2000; 
-  border: 1px solid var(--border);
-}
-
-.menu-item { 
-  display: flex; 
-  align-items: center; 
-  gap: 18px; 
-  width: 100%; 
-  text-align: left; 
-  padding: 15px 18px; 
-  border: none; 
-  background: var(--card) !important; 
-  font-size: 16px; 
-  font-weight: 700; 
-  color: var(--text) !important; 
-  cursor: pointer; 
-  text-decoration: none; 
-  transition: background 0.2s;
-}
-
-.menu-item:hover{
-  background: var(--bg) !important;
-}
-
-.menu-divider { 
-  height: 1px; 
-  background: var(--border); 
-}
-
-.overlay { 
-  position: fixed; 
-  top: 54px; left: 0; right: 0; bottom: 0; 
-  z-index: 999; 
-  background: transparent; 
-}
-
-/* FORCE DARK MODE - inline style override tan */
-.dark-mode, [data-theme='dark'] {
-  background: var(--bg) !important;
+/* 1. Categories Page fix - thupui eng */
+[data-theme='dark'] h1, [data-theme='dark'] h2, .dark-mode h1, .dark-mode h2 {
   color: var(--text) !important;
 }
 
-.dark-mode body, [data-theme='dark'] body {
-  background: var(--bg) !important;
+/* 2. Home Card - link purple fix */
+[data-theme='dark'] .card a, .dark-mode .card a {
+  color: var(--link) !important;
+}
+
+/* 3. Story Page - thu chhiar lai a dum fix - A PAWIMAWH BER */
+[data-theme='dark'] .card p,
+[data-theme='dark'] .card div,
+[data-theme='dark'] .card span,
+.dark-mode .card p,
+.dark-mode .card div,
+.dark-mode .card span {
   color: var(--text) !important;
 }
 
+/* Story page body text - dum vek kha ti eng */
+[data-theme='dark'] div[style*="color:black"],
+[data-theme='dark'] div[style*="color: black"],
+[data-theme='dark'] div[style*="#111"],
+[data-theme='dark'] div[style*="#000"],
+[data-theme='dark'] p[style*="color:black"],
+.dark-mode div[style*="color:black"],
+.dark-mode div[style*="color: black"],
+.dark-mode div[style*="#111"],
+.dark-mode div[style*="#000"],
+.dark-mode p[style*="color:black"] {
+  color: var(--text) !important;
+}
+
+/* Container leh page background - var tur */
+[data-theme='dark'] div[style*="background:white"],
+[data-theme='dark'] div[style*="background: white"],
+[data-theme='dark'] div[style*="#fff"],
+[data-theme='dark'] div[style*="#ffffff"],
+[data-theme='dark'] div[style*="f2f2f7"],
+[data-theme='dark'] div[style*="f9f9fb"],
 .dark-mode div[style*="background:white"],
 .dark-mode div[style*="background: white"],
 .dark-mode div[style*="#fff"],
@@ -154,4 +115,9 @@ body {
   background: var(--card) !important;
   color: var(--text) !important;
   border-color: var(--border) !important;
+}
+
+/* Back button */
+[data-theme='dark'] button, .dark-mode button {
+  color: var(--text) !important;
 }
