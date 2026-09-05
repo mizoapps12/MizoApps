@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
 import { doc, getDoc } from 'firebase/firestore'
-import Link from 'next/link'
 
 export default function StoryPage({params}){
   const [story,setStory]=useState(null)
@@ -10,46 +9,44 @@ export default function StoryPage({params}){
 
   useEffect(()=>{
     const load=async()=>{
-      try{
-        const snap = await getDoc(doc(db,'stories', params.id))
-        if(snap.exists()) setStory({id:snap.id, ...snap.data()})
-      }catch(e){ console.log(e) }
+      const snap = await getDoc(doc(db,'stories', params.id))
+      if(snap.exists()) setStory({id:snap.id, ...snap.data()})
       setLoading(false)
     }
     load()
   },[params.id])
 
-  if(loading) return <div style={{paddingTop:'80px', textAlign:'center'}}>Loading...</div>
-  if(!story) return <div style={{paddingTop:'80px', textAlign:'center'}}>Story hmuh loh a ni</div>
+  if(loading) return <div style={{paddingTop:'90px', textAlign:'center'}}>Loading...</div>
+  if(!story) return <div style={{paddingTop:'90px', textAlign:'center'}}>Story hmuh loh</div>
 
   return(
-    <div style={{minHeight:'100vh', background:'#fff', paddingTop:'75px'}}>
-      <div style={{padding:'16px', maxWidth:'600px', margin:'0 auto'}}>
-        <Link href="/categories" style={{fontSize:'13px', color:'#888', textDecoration:'none'}}>‹ Categories</Link>
-        
-        <div style={{marginTop:'12px', display:'flex', gap:'6px'}}>
-          <span style={{background:'#111', color:'white', padding:'5px 12px', borderRadius:'20px', fontSize:'11px', fontWeight:'700'}}>{story.category}</span>
-          {story.subCategory && <span style={{background:'#ff6b00', color:'white', padding:'5px 12px', borderRadius:'20px', fontSize:'11px', fontWeight:'700'}}>{story.subCategory}</span>}
-        </div>
+    <div style={{minHeight:'100vh', background:'#f2f2f7', paddingTop:'70px'}}>
+      {/* Chung ber - Arrow lian + Back tawp */}
+      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer'}}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5" />
+          <path d="M12 19l-7-7 7-7" />
+        </svg>
+        <span style={{fontSize:'18px', fontWeight:'700'}}>Back</span>
+      </div>
 
-        <h1 style={{fontSize:'24px', fontWeight:'800', margin:'14px 0', lineHeight:'1.3'}}>{story.title}</h1>
-
-        <div style={{background:'#f9f9fb', borderRadius:'16px', padding:'18px', marginTop:'10px', border:'1px solid #eee'}}>
-          <div style={{fontSize:'11px', color:'#888', fontWeight:'700', marginBottom:'8px', letterSpacing:'1px'}}>MIZO VERSION</div>
-          <div style={{fontSize:'16px', lineHeight:'1.8', whiteSpace:'pre-wrap'}}>{story.contentMizo}</div>
-        </div>
-
-        {story.contentEng && (
-          <div style={{background:'#fff7ed', borderRadius:'16px', padding:'18px', marginTop:'12px', border:'1px solid #ffedd5'}}>
-            <div style={{fontSize:'11px', color:'#ff6b00', fontWeight:'700', marginBottom:'8px', letterSpacing:'1px'}}>ENGLISH</div>
-            <div style={{fontSize:'15px', lineHeight:'1.7', whiteSpace:'pre-wrap', color:'#444'}}>{story.contentEng}</div>
+      {/* Thu awmna - class chhung */}
+      <div style={{padding:'10px 14px 30px 14px'}}>
+        <div style={{background:'white', borderRadius:'18px', padding:'20px', border:'1px solid #e5e5e5'}}>
+          <div style={{fontSize:'14px', color:'#111', marginBottom:'6px'}}>TITLE:</div>
+          <div style={{fontSize:'18px', fontWeight:'800', marginBottom:'20px'}}>{story.title}</div>
+          
+          <div style={{fontSize:'16px', lineHeight:'1.9', whiteSpace:'pre-wrap', color:'#111'}}>
+            {story.contentMizo}
           </div>
-        )}
 
-        <div style={{marginTop:'20px', textAlign:'center', paddingBottom:'30px'}}>
-          <Link href="/categories" style={{display:'inline-block', background:'#111', color:'white', padding:'12px 24px', borderRadius:'12px', textDecoration:'none', fontWeight:'700', fontSize:'13px'}}>‹ Categories ah kir leh</Link>
+          {story.contentEng && (
+            <div style={{marginTop:'24px', paddingTop:'16px', borderTop:'1px solid #eee', fontSize:'15px', lineHeight:'1.7', whiteSpace:'pre-wrap', color:'#555'}}>
+              {story.contentEng}
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
-            }
+                      }
