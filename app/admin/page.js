@@ -1,12 +1,14 @@
-'use client'
+    'use client'
 import { useState, useEffect } from 'react'
 import { db, auth } from '@/lib/firebase'
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
 import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc, arrayUnion, serverTimestamp, orderBy, query } from 'firebase/firestore'
+import { useSettings } from '../components/SettingsContext'
 
 const DEFAULT_CATS = ['Love Story','Funny Story','Horror Story','Science Fiction','Life Lesson Story','Short story','Motivational Story','Mizo Thawnthu','Mimal Chanchin','Thu tha lawrkhawm','Lawrkhawm','Pathian thu']
 
 export default function Admin(){
+  const {dark} = useSettings()
   const [user,setUser]=useState(null)
   const [loading,setLoading]=useState(true)
   const [email,setEmail]=useState('')
@@ -47,23 +49,24 @@ export default function Admin(){
   const startEdit=(c)=>{ setEditId(c.id); setEditName(c.name) }
   const saveEdit=async()=>{ if(!editName.trim()) return; await updateDoc(doc(db,'categories',editId),{name:editName.trim()}); setEditId(null); setEditName(''); loadCats() }
 
-  const box = { width:'100%', height:'52px', borderRadius:'14px', border:'1px solid #ddd', background:'white', padding:'0 16px', fontSize:'14px', outline:'none', boxSizing:'border-box' }
+  const box = { width:'100%', height:'52px', borderRadius:'14px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#1e1e1e':'white', padding:'0 16px', fontSize:'14px', outline:'none', boxSizing:'border-box', color: dark?'white':'#111' }
+  const boxArea = { width:'100%', padding:'14px', borderRadius:'14px', border: dark?'1px solid #444':'1px solid #ddd', fontSize:'14px', boxSizing:'border-box', background: dark?'#1e1e1e':'white', color: dark?'white':'#111' }
 
-  if(loading) return <div style={{textAlign:'center', paddingTop:'80px'}}>Loading...</div>
+  if(loading) return <div style={{textAlign:'center', paddingTop:'80px', background: dark?'#121212':'#f2f2f7', color: dark?'white':'#111', minHeight:'100vh'}}>Loading...</div>
   if(!user) return(
-    <div style={{minHeight:'70vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'20px', background:'#f2f2f7'}}>
-      <h2 style={{fontWeight:'800', marginBottom:'22px'}}>MizoApps Admin</h2>
+    <div style={{minHeight:'70vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'20px', background: dark?'#121212':'#f2f2f7'}}>
+      <h2 style={{fontWeight:'800', marginBottom:'22px', color: dark?'white':'#111'}}>MizoApps Admin</h2>
       <div style={{width:'100%', maxWidth:'360px', display:'flex', flexDirection:'column', gap:'14px'}}>
-        <div><div style={{fontWeight:'700', fontSize:'13px', marginBottom:'6px'}}>Email</div><input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} style={box}/></div>
-        <div><div style={{fontWeight:'700', fontSize:'13px', marginBottom:'6px'}}>Password</div><div style={{position:'relative'}}><input type={showPass?'text':'password'} placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} style={{...box, paddingRight:'44px'}}/><span onClick={()=>setShowPass(!showPass)} style={{position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', cursor:'pointer', fontSize:'20px'}}>{showPass?'🙈':'👁️'}</span></div></div>
-        <button onClick={login} style={{...box, background:'#111', color:'white', fontWeight:'700'}}>Login</button>
+        <div><div style={{fontWeight:'700', fontSize:'13px', marginBottom:'6px', color: dark?'#ccc':'#111'}}>Email</div><input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} style={box}/></div>
+        <div><div style={{fontWeight:'700', fontSize:'13px', marginBottom:'6px', color: dark?'#ccc':'#111'}}>Password</div><div style={{position:'relative'}}><input type={showPass?'text':'password'} placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} style={{...box, paddingRight:'44px'}}/><span onClick={()=>setShowPass(!showPass)} style={{position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', cursor:'pointer', fontSize:'20px'}}>{showPass?'🙈':'👁️'}</span></div></div>
+        <button onClick={login} style={{...box, background:'#111', color:'white', fontWeight:'700', border:'none'}}>Login</button>
       </div>
     </div>
   )
 
   return(
-    <div style={{minHeight:'100vh', background:'#f2f2f7', paddingTop:'75px'}}>
-      {/* TAB - TUNAH CHU A CHUNG DUM HNUAIAH A AWM TAWH - A LANG NGEI ANG */}
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'75px'}}>
+      {/* TAB */}
       <div style={{margin:'12px', background:'#111', borderRadius:'16px', padding:'6px', display:'flex', gap:'6px'}}>
         <button onClick={()=>setTab('write')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='write'?'white':'transparent', color:tab==='write'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>✍️ WRITE STORY</button>
         <button onClick={()=>setTab('manage')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='manage'?'white':'transparent', color:tab==='manage'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>📚 MANAGE CATEGORY</button>
@@ -73,7 +76,7 @@ export default function Admin(){
         <div style={{width:'92%', maxWidth:'420px', margin:'0 auto'}}>
           {tab==='write' && (
             <div style={{display:'flex', flexDirection:'column', gap:'14px'}}>
-              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0'}}>Story Thar Ziahna</h2>
+              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0', color: dark?'white':'#111'}}>Story Thar Ziahna</h2>
               <input placeholder="Thupui / Title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} style={box}/>
               <select value={form.category} onChange={e=>{const c=categories.find(x=>x.name===e.target.value); setSelCat(c); setForm({...form,category:e.target.value, subCategory:''})}} style={box}>
                 {categories.map(c=><option key={c.id} value={c.name}>{c.name}</option>)}
@@ -82,48 +85,48 @@ export default function Admin(){
                 <option value="">Sub Category (Optional)</option>
                 {(selCat?.subcategories||[]).map((s,i)=><option key={i} value={s}>{s}</option>)}
               </select>
-              <textarea placeholder="Mizo tawng a thawnthu..." value={form.contentMizo} onChange={e=>setForm({...form,contentMizo:e.target.value})} style={{width:'100%', height:'220px', padding:'14px', borderRadius:'14px', border:'1px solid #ddd', fontSize:'14px', boxSizing:'border-box'}}/>
-              <textarea placeholder="English original (a awm chuan)" value={form.contentEng} onChange={e=>setForm({...form,contentEng:e.target.value})} style={{width:'100%', height:'110px', padding:'14px', borderRadius:'14px', border:'1px solid #ddd', fontSize:'14px', boxSizing:'border-box'}}/>
-              <button onClick={publish} style={{...box, background:'#111', color:'white', fontWeight:'800'}}>Publish to MizoApps</button>
-              <button onClick={logout} style={{...box, background:'white', color:'#ff3b30', fontWeight:'700', border:'1px solid #ff3b30'}}>Logout</button>
+              <textarea placeholder="Mizo tawng a thawnthu..." value={form.contentMizo} onChange={e=>setForm({...form,contentMizo:e.target.value})} style={{...boxArea, height:'220px'}}/>
+              <textarea placeholder="English original (a awm chuan)" value={form.contentEng} onChange={e=>setForm({...form,contentEng:e.target.value})} style={{...boxArea, height:'110px'}}/>
+              <button onClick={publish} style={{...box, background:'#111', color:'white', fontWeight:'800', border:'none'}}>Publish to MizoApps</button>
+              <button onClick={logout} style={{...box, background: dark?'#1e1e1e':'white', color:'#ff3b30', fontWeight:'700', border:'1px solid #ff3b30'}}>Logout</button>
             </div>
           )}
 
           {tab==='manage' && (
             <div>
-              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0'}}>Category Manage</h2>
-              <p style={{textAlign:'center', fontSize:'11px', color:'#888', marginBottom:'14px'}}>Tah i siam apiang Write Story ah auto in a lang ang</p>
-              <div style={{display:'flex',gap:'8px',marginBottom:'18px', background:'white', padding:'10px', borderRadius:'14px', border:'1px solid #eee'}}>
-                <input value={newCat} onChange={e=>setNewCat(e.target.value)} placeholder="Category thar - Pathian thu" style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid #ddd'}}/>
+              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0', color: dark?'white':'#111'}}>Category Manage</h2>
+              <p style={{textAlign:'center', fontSize:'11px', color: dark?'#aaa':'#888', marginBottom:'14px'}}>Tah i siam apiang Write Story ah auto in a lang ang</p>
+              <div style={{display:'flex',gap:'8px',marginBottom:'18px', background: dark?'#1e1e1e':'white', padding:'10px', borderRadius:'14px', border: dark?'1px solid #333':'1px solid #eee'}}>
+                <input value={newCat} onChange={e=>setNewCat(e.target.value)} placeholder="Category thar - Pathian thu" style={{flex:1, padding:'12px', borderRadius:'10px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#252525':'white', color: dark?'white':'#111'}}/>
                 <button onClick={addCategory} style={{background:'#111', color:'white', border:'none', padding:'0 20px', borderRadius:'10px', fontWeight:'800'}}>Add</button>
               </div>
               {categories.map(c=>(
-                <div key={c.id} style={{background:'white',padding:'14px',borderRadius:'14px',marginBottom:'12px',border:'1px solid #eee'}}>
+                <div key={c.id} style={{background: dark?'#1e1e1e':'white',padding:'14px',borderRadius:'14px',marginBottom:'12px',border: dark?'1px solid #333':'1px solid #eee'}}>
                   {editId===c.id? (
-                    <div style={{display:'flex',gap:'6px'}}><input value={editName} onChange={e=>setEditName(e.target.value)} style={{flex:1, padding:'10px', borderRadius:'10px', border:'1px solid #ddd'}}/><button onClick={saveEdit} style={{background:'#22c55e',color:'white',border:'none',padding:'0 14px',borderRadius:'10px',fontWeight:'700'}}>Save</button><button onClick={()=>setEditId(null)} style={{background:'#eee',border:'none',padding:'0 12px',borderRadius:'10px'}}>X</button></div>
+                    <div style={{display:'flex',gap:'6px'}}><input value={editName} onChange={e=>setEditName(e.target.value)} style={{flex:1, padding:'10px', borderRadius:'10px', border: dark?'1px solid #444':'1px solid #ddd', background: dark?'#252525':'white', color: dark?'white':'#111'}}/><button onClick={saveEdit} style={{background:'#22c55e',color:'white',border:'none',padding:'0 14px',borderRadius:'10px',fontWeight:'700'}}>Save</button><button onClick={()=>setEditId(null)} style={{background: dark?'#333':'#eee',color: dark?'white':'#111',border:'none',padding:'0 12px',borderRadius:'10px'}}>X</button></div>
                   ) : (
                     <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                      <b style={{fontSize:'15px'}}>{c.name} <span style={{color:'#888', fontSize:'11px', fontWeight:'400'}}>({c.subcategories?.length||0})</span></b>
+                      <b style={{fontSize:'15px', color: dark?'white':'#111'}}>{c.name} <span style={{color: dark?'#888':'#888', fontSize:'11px', fontWeight:'400'}}>({c.subcategories?.length||0})</span></b>
                       <div style={{display:'flex',gap:'6px'}}>
-                        <button onClick={()=>startEdit(c)} style={{background:'#e8f0fe',border:'none',padding:'7px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'700'}}>Edit</button>
-                        <button onClick={()=>delCat(c.id)} style={{background:'#fee',color:'red',border:'none',padding:'7px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'700'}}>Delete</button>
+                        <button onClick={()=>startEdit(c)} style={{background: dark?'#2a2a2a':'#e8f0fe',color: dark?'white':'#111',border:'none',padding:'7px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'700'}}>Edit</button>
+                        <button onClick={()=>delCat(c.id)} style={{background: dark?'#3a1a1a':'#fee',color:'red',border:'none',padding:'7px 12px',borderRadius:'8px',fontSize:'12px',fontWeight:'700'}}>Delete</button>
                       </div>
                     </div>
                   )}
                   <div style={{display:'flex',gap:'6px',marginTop:'12px'}}>
-                    <input value={subInputs[c.id]||''} onChange={e=>setSubInputs({...subInputs,[c.id]:e.target.value})} placeholder={`${c.name} ah Sub add`} style={{flex:1, padding:'10px', borderRadius:'10px', border:'1px solid #ddd', fontSize:'12px'}}/>
+                    <input value={subInputs[c.id]||''} onChange={e=>setSubInputs({...subInputs,[c.id]:e.target.value})} placeholder={`${c.name} ah Sub add`} style={{flex:1, padding:'10px', borderRadius:'10px', border: dark?'1px solid #444':'1px solid #ddd', fontSize:'12px', background: dark?'#252525':'white', color: dark?'white':'#111'}}/>
                     <button onClick={()=>addSub(c.id)} style={{background:'#ff6b00',color:'white',border:'none',padding:'0 14px',borderRadius:'10px',fontWeight:'700'}}>Add Sub</button>
                   </div>
                   <div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginTop:'10px'}}>
-                    {(c.subcategories||[]).map((s,i)=><span key={i} style={{background:'#f2f2f7',padding:'6px 12px',borderRadius:'20px',fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>{s} <span onClick={()=>delSub(c.id,s)} style={{background:'#ff3b30', color:'white', width:'18px', height:'18px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}>x</span></span>)}
+                    {(c.subcategories||[]).map((s,i)=><span key={i} style={{background: dark?'#252525':'#f2f2f7', color: dark?'white':'#111', padding:'6px 12px',borderRadius:'20px',fontSize:'11px', display:'flex', alignItems:'center', gap:'6px'}}>{s} <span onClick={()=>delSub(c.id,s)} style={{background:'#ff3b30', color:'white', width:'18px', height:'18px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}>x</span></span>)}
                   </div>
                 </div>
               ))}
-              <button onClick={logout} style={{...box, background:'white', color:'#ff3b30', fontWeight:'700', border:'1px solid #ff3b30', marginTop:'16px'}}>Logout</button>
+              <button onClick={logout} style={{...box, background: dark?'#1e1e1e':'white', color:'#ff3b30', fontWeight:'700', border:'1px solid #ff3b30', marginTop:'16px'}}>Logout</button>
             </div>
           )}
         </div>
       </div>
     </div>
   )
-            }
+    }
