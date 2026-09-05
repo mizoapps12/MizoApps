@@ -30,8 +30,6 @@ export default function SeriesPage(){
       const snap = await getDocs(collection(db,'stories'))
       const all = snap.docs.map(d=>({id:d.id,...d.data()}))
       const filtered = all.filter(s=> (s.subCategory === decoded || s.series === decoded || s.sub_category === decoded))
-
-      // Bung number azir in sort - 1,2,3...
       filtered.sort((a,b)=>{
         const getNum = (t)=>{ const m = (t||'').match(/Bung\s*(\d+)/i); return m? parseInt(m[1]):0 }
         return getNum(a.title) - getNum(b.title)
@@ -42,26 +40,21 @@ export default function SeriesPage(){
     load()
   },[decoded])
 
-  if(loading) return <div style={{paddingTop:'90px', textAlign:'center', background: dark?'#121212':'#f2f2f7', minHeight:'100vh', color: dark?'#fff':'#111'}}>Loading...</div>
+  if(loading) return <div style={{paddingTop:'90px', textAlign:'center', minHeight:'100vh'}}>Loading...</div>
 
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'70px'}}>
 
-      {/* ARROW LIAN + TITLE - BACK PAIH */}
-      <div style={{padding:'16px 14px 6px 14px', display:'flex', alignItems:'center', gap:'12px'}}>
-        <div onClick={()=>router.back()} style={{cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', width:'36px', height:'36px', borderRadius:'50%', background: dark?'#2a2a2a':'white', border: dark?'1px solid #444':'1px solid #ddd'}}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
-          </svg>
-        </div>
-        <div>
-          <h2 style={{fontSize:'20px', fontWeight:'800', color: dark?'white':'black', lineHeight:'1.2'}}>{decoded}</h2>
-          <p style={{color: dark?'#aaa':'#666', fontSize:'12px', marginTop:'2px'}}>{stories.length} bung awm</p>
-        </div>
+      {/* ARROW MAL - BIAL AWM LO - 10 BUNG AWM TIH PAIH */}
+      <div onClick={()=>router.back()} style={{padding:'14px', display:'flex', alignItems:'center', gap:'10px', cursor:'pointer'}}>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+        </svg>
+        <span style={{fontSize:'20px', fontWeight:'800', color: dark?'white':'black'}}>{decoded}</span>
       </div>
 
       <div style={{padding:'10px 14px'}}>
-        <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+        <div style={{display:'flex', flexDirection:'column', gap:'10px', marginTop:'6px'}}>
           {stories.map(s=>{
             const preview = s.contentMizo? s.contentMizo.replace(/^\s*TITLE:\s*.*$/gim, '').trim().substring(0,100) : ''
             return(
@@ -76,4 +69,4 @@ export default function SeriesPage(){
       </div>
     </div>
   )
-            }
+}
