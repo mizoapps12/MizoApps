@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSettings } from './components/SettingsContext'
 
@@ -32,31 +31,25 @@ export default function HomePage(){
       setLoading(false)
     }
     load()
-    // Browser auto scroll ti tawp
     if('scrollRestoration' in window.history){
       window.history.scrollRestoration = 'manual'
     }
   },[])
 
-  // SCROLL RESTORE - A pawimawh ber
   useEffect(()=>{
     if(loading) return
     const savedScroll = sessionStorage.getItem('home-scroll-y')
     const savedVisible = sessionStorage.getItem('home-visible')
-    
     if(savedVisible){
       setVisible(parseInt(savedVisible))
     }
-    
     if(savedScroll){
-      // A hnuai a data a render hma in nghak deuh
       setTimeout(()=>{
         window.scrollTo({top: parseInt(savedScroll), behavior: 'instant'})
       }, 300)
     }
   },[loading, stories])
 
-  // Scroll save zel
   useEffect(()=>{
     const handleScroll = () => {
       sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
@@ -65,25 +58,10 @@ export default function HomePage(){
     return () => window.removeEventListener('scroll', handleScroll)
   },[])
 
-  const handleStoryClick = () => {
+  const handleStoryClick = (id) => {
     sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
     sessionStorage.setItem('home-visible', visible.toString())
-  }
-
-  const handleCategoryClick = (e, category) => {
-    e.preventDefault()
-    e.stopPropagation()
-    sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
-    sessionStorage.setItem('home-visible', visible.toString())
-    router.push(`/category/${encodeURIComponent(category)}`)
-  }
-
-  const handleSubCategoryClick = (e, subCategory) => {
-    e.preventDefault()
-    e.stopPropagation()
-    sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
-    sessionStorage.setItem('home-visible', visible.toString())
-    router.push(`/series/${encodeURIComponent(subCategory)}`)
+    router.push(`/story/${id}`)
   }
 
   if(loading){
@@ -96,34 +74,50 @@ export default function HomePage(){
         {stories.slice(0, visible).map(story=>{
           const preview = story.contentMizo ? story.contentMizo.replace(/^\s*TITLE:\s*.*$/gim, '').trim().substring(0,140) : ''
           return(
-            <Link 
+            <div 
               key={story.id} 
-              href={`/story/${story.id}`} 
-              onClick={handleStoryClick} 
-              scroll={false}
-              style={{textDecoration:'none'}}
+              onClick={()=>handleStoryClick(story.id)}
+              style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee', cursor:'pointer'}}
             >
-              <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee'}}>
-                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
-                  <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888', display:'flex', gap:'4px', alignItems:'center'}}>
-                    <span onClick={(e)=>handleCategoryClick(e, story.category)} style={{cursor:'pointer', textDecoration:'underline'}}>{story.category}</span>
-                    {story.subCategory && (
-                      <>
-                        <span>{'>'}</span>
-                        <span onClick={(e)=>handleSubCategoryClick(e, story.subCategory)} style={{cursor:'pointer', textDecoration:'underline'}}>{story.subCategory}</span>
-                      </>
-                    )}
-                  </div>
-                  <div style={{fontSize:'11px', color: dark?'#777':'#999'}}>{timeAgo(story.createdAt)}</div>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
+                <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888', display:'flex', gap:'4px', alignItems:'center', position:'relative', zIndex:5}}>
+                  <span 
+                    onClick={(e)=>{
+                      e.stopPropagation()
+                      sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+                      sessionStorage.setItem('home-visible', visible.toString())
+                      router.push(`/category/${encodeURIComponent(story.category)}`)
+                    }} 
+                    style={{cursor:'pointer', textDecoration:'underline', color:'#007AFF'}}
+                  >
+                    {story.category}
+                  </span>
+                  {story.subCategory && (
+                    <>
+                      <span>{'>'}</span>
+                      <span 
+                        onClick={(e)=>{
+                          e.stopPropagation()
+                          sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+                          sessionStorage.setItem('home-visible', visible.toString())
+                          router.push(`/series/${encodeURIComponent(story.subCategory)}`)
+                        }} 
+                        style={{cursor:'pointer', textDecoration:'underline', color:'#007AFF'}}
+                      >
+                        {story.subCategory}
+                      </span>
+                    </>
+                  )}
                 </div>
-                <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', color: dark?'#ffffff':'#111111', marginBottom:'10px', lineHeight:'1.3'}}>
-                  {story.title}
-                </div>
-                <div style={{fontSize: `${fontSize-1}px`, color: dark?'#e5e5e5':'#333333', lineHeight:'1.6', display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical', overflow:'hidden'}}>
-                  {preview}...
-                </div>
+                <div style={{fontSize:'11px', color: dark?'#777':'#999'}}>{timeAgo(story.createdAt)}</div>
               </div>
-            </Link>
+              <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', color: dark?'#ffffff':'#111111', marginBottom:'10px', lineHeight:'1.3'}}>
+                {story.title}
+              </div>
+              <div style={{fontSize: `${fontSize-1}px`, color: dark?'#e5e5e5':'#333333', lineHeight:'1.6', display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical', overflow:'hidden'}}>
+                {preview}...
+              </div>
+            </div>
           )
         })}
       </div>
