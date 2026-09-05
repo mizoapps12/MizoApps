@@ -42,6 +42,19 @@ export default function StoryPage({params}){
     }
   },[story])
 
+  const handleShare = async()=>{
+    const url = window.location.href
+    const text = `TITLE: ${story?.title}\n\n${url}`
+    if(navigator.share){
+      try{
+        await navigator.share({title: story?.title, text: text, url: url})
+      }catch(e){}
+    }else{
+      await navigator.clipboard.writeText(url)
+      alert('Link Copied!')
+    }
+  }
+
   if(loading) return <div style={{paddingTop:'90px', textAlign:'center', background: dark?'#121212':'#f2f2f7', color: dark?'#fff':'#111', minHeight:'100vh'}}>Loading...</div>
   if(!story) return <div style={{paddingTop:'90px', textAlign:'center', background: dark?'#121212':'#f2f2f7', color: dark?'#fff':'#111', minHeight:'100vh'}}>Story hmuh loh</div>
 
@@ -49,11 +62,22 @@ export default function StoryPage({params}){
 
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'70px', transition:'background 0.3s'}}>
-      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer'}}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
-        </svg>
-        <span style={{fontSize:'18px', fontWeight:'700', color: dark?'white':'black'}}>Back</span>
+      {/* BACK leh SHARE */}
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 18px'}}>
+        <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', cursor:'pointer'}}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+          </svg>
+          <span style={{fontSize:'18px', fontWeight:'700', color: dark?'white':'black'}}>Back</span>
+        </div>
+
+        <div onClick={handleShare} style={{display:'flex', alignItems:'center', gap:'6px', cursor:'pointer', background: dark?'#2a2a2a':'white', padding:'7px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd'}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          <span style={{fontSize:'14px', fontWeight:'600', color: dark?'white':'black'}}>Share</span>
+        </div>
       </div>
 
       <div style={{padding:'10px 14px 30px 14px'}}>
@@ -77,4 +101,4 @@ export default function StoryPage({params}){
       </div>
     </div>
   )
-    }
+        }
