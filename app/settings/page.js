@@ -5,12 +5,11 @@ export default function SettingsPage(){
   const {dark, fontSize, toggleDark, changeFont} = useSettings()
 
   return(
-    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'75px', transition:'0.3s'}}>
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'65px', transition:'0.3s'}}>
       <div style={{maxWidth:'600px', margin:'0 auto', padding:'16px'}}>
         <h1 style={{fontSize:'28px', fontWeight:'900', color: dark?'white':'#111'}}>Settings</h1>
-        <p style={{fontSize:'13px', color:'#888', marginTop:'4px'}}>Site pumpui i control theih</p>
-
-        <div style={{marginTop:'20px'}}>
+      
+          <div style={{marginTop:'20px'}}>
           <div style={{fontSize:'11px', fontWeight:'800', letterSpacing:'1.2px', color:'#888', margin:'0 0 8px 6px'}}>APPEARANCE</div>
           <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', border:`1px solid ${dark?'#333':'#eee'}`, overflow:'hidden'}}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'18px'}}>
@@ -29,7 +28,7 @@ export default function SettingsPage(){
         </div>
 
         <div style={{marginTop:'22px'}}>
-          <div style={{fontSize:'11px', fontWeight:'800', letterSpacing:'1.2px', color:'#888', margin:'0 0 8px 6px'}}>TYPOGRAPHY - SITE PUMPUI</div>
+          <div style={{fontSize:'11px', fontWeight:'800', letterSpacing:'1.2px', color:'#888', margin:'0 0 8px 6px'}}>TYPOGRAPHY</div>
           <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', border:`1px solid ${dark?'#333':'#eee'}`, padding:'18px'}}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px'}}>
               <div style={{fontWeight:'700', color: dark?'white':'#111'}}>Font Size - {fontSize}px</div>
