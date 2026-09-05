@@ -3,28 +3,35 @@
   --card: #ffffff; 
   --text: #1a1a1a; 
   --text2: #666;
-  --border: #eee;
+  --border: #e5e5;
   --link: #6d28d9;
+  --header: #111;
 }
 
 [data-theme='dark'], .dark-mode { 
   --bg: #121212; 
   --card: #1e1e1e; 
   --text: #f0f0f0; 
-  --text2: #aaa;
+  --text2: #aaaaaa;
   --border: #333;
   --link: #a78bfa;
+  --header: #111;
 }
 
-html { transition: font-size 0.2s ease; }
+html { 
+  transition: font-size 0.2s ease; 
+  background: var(--bg);
+}
 
 body { 
   font-family: system-ui, -apple-system, sans-serif; 
   background: var(--bg) !important; 
   color: var(--text) !important; 
   margin: 0; 
+  transition: background 0.3s, color 0.3s;
 }
 
+/* LAYOUT */
 .container { 
   max-width: 900px; 
   margin: auto; 
@@ -40,11 +47,22 @@ body {
   padding: 18px; 
   margin: 14px 0; 
   box-shadow: 0 2px 10px rgba(0,0,0,0.06); 
-  border: 1px solid var(--border);
+  border: 1px solid var(--border) !important;
   color: var(--text) !important;
 }
 
-/* HEADER */
+/* BUTTONS */
+.btn { 
+  background: #111; 
+  color: white; 
+  padding: 10px 18px; 
+  border-radius: 10px; 
+  border: none; 
+  font-weight: bold; 
+  cursor: pointer;
+}
+
+/* HEADER - Always dark */
 .header { 
   position: fixed; 
   top: 0; left: 0; right: 0; 
@@ -56,68 +74,139 @@ body {
   padding: 0 12px; 
   z-index: 1001; 
 }
-.header-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: white !important; }
-.dot-btn { background: transparent; border: none; font-size: 26px; font-weight: 900; cursor: pointer; color: white; padding: 8px; }
-.dot-menu { position: fixed; top: 58px; right: 8px; background: var(--card) !important; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 250px; overflow: hidden; z-index: 2000; border: 1px solid var(--border); }
-.menu-item { display: flex; align-items: center; gap: 18px; width: 100%; padding: 15px 18px; border: none; background: var(--card) !important; font-size: 16px; font-weight: 700; color: var(--text) !important; cursor: pointer; text-decoration: none; }
-.menu-divider { height: 1px; background: var(--border); }
-.overlay { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 999; }
+.header-logo { 
+  font-family: 'Segoe UI', sans-serif; 
+  font-size: 26px; 
+  font-weight: 900; 
+  text-decoration: none; 
+  color: white !important;
+}
+.dot-btn { 
+  background: transparent; 
+  border: none; 
+  font-size: 26px; 
+  font-weight: 900; 
+  cursor: pointer; 
+  color: white !important; 
+  padding: 8px; 
+}
+.dot-menu { 
+  position: fixed; 
+  top: 58px; 
+  right: 8px; 
+  background: var(--card) !important; 
+  border-radius: 14px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
+  width: 250px; 
+  overflow: hidden; 
+  z-index: 2000; 
+  border: 1px solid var(--border) !important;
+}
+.menu-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 18px; 
+  width: 100%; 
+  text-align: left; 
+  padding: 15px 18px; 
+  border: none; 
+  background: var(--card) !important; 
+  font-size: 16px; 
+  font-weight: 700; 
+  color: var(--text) !important; 
+  cursor: pointer; 
+  text-decoration: none; 
+}
+.menu-item:hover{
+  background: var(--bg) !important;
+}
+.menu-divider { height: 1px; background: var(--border) !important; }
+.overlay { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 999; background: transparent; }
 
-/* --- DARK MODE FIX - A TAWP BER AH DAH RAWH --- */
+/* LINKS */
+a { color: var(--link); }
+.card a { color: var(--link) !important; }
 
-/* 1. Categories Page fix - thupui eng */
-[data-theme='dark'] h1, [data-theme='dark'] h2, .dark-mode h1, .dark-mode h2 {
-  color: var(--text) !important;
+/* =======================================================
+   DARK MODE FORCE FIX - A HNUAI BER AH AWM ANGAI
+   ======================================================= */
+
+/* 1. Page background - Categories page eng lai kha ti thim */
+[data-theme='dark'] body,
+[data-theme='dark'] .container,
+[data-theme='dark'] main,
+.dark-mode body,
+.dark-mode .container,
+.dark-mode main {
+  background: #121212 !important;
+  color: #f0f0f0 !important;
 }
 
-/* 2. Home Card - link purple fix */
-[data-theme='dark'] .card a, .dark-mode .card a {
-  color: var(--link) !important;
+/* 2. Categories title - "Categories - AUTO" a var kha ti lang */
+[data-theme='dark'] h1, [data-theme='dark'] h2, [data-theme='dark'] h3,
+.dark-mode h1, .dark-mode h2, .dark-mode h3 {
+  color: #f0f0f0 !important;
 }
 
-/* 3. Story Page - thu chhiar lai a dum fix - A PAWIMAWH BER */
+/* 3. Story Page - thu chhiar lai dum kha ti var - A PAWIMAWH BER */
 [data-theme='dark'] .card p,
 [data-theme='dark'] .card div,
 [data-theme='dark'] .card span,
+[data-theme='dark'] .card li,
 .dark-mode .card p,
 .dark-mode .card div,
-.dark-mode .card span {
-  color: var(--text) !important;
+.dark-mode .card span,
+.dark-mode .card li {
+  color: #e5e5e5 !important;
 }
 
-/* Story page body text - dum vek kha ti eng */
-[data-theme='dark'] div[style*="color:black"],
-[data-theme='dark'] div[style*="color: black"],
-[data-theme='dark'] div[style*="#111"],
-[data-theme='dark'] div[style*="#000"],
-[data-theme='dark'] p[style*="color:black"],
-.dark-mode div[style*="color:black"],
-.dark-mode div[style*="color: black"],
-.dark-mode div[style*="#111"],
-.dark-mode div[style*="#000"],
-.dark-mode p[style*="color:black"] {
-  color: var(--text) !important;
+[data-theme='dark'] .card b,
+[data-theme='dark'] .card strong,
+.dark-mode .card b,
+.dark-mode .card strong {
+  color: #ffffff !important;
 }
 
-/* Container leh page background - var tur */
-[data-theme='dark'] div[style*="background:white"],
+/* 4. Inline style override - white background hardcode ho */
 [data-theme='dark'] div[style*="background: white"],
-[data-theme='dark'] div[style*="#fff"],
-[data-theme='dark'] div[style*="#ffffff"],
-[data-theme='dark'] div[style*="f2f2f7"],
+[data-theme='dark'] div[style*="background:white"],
+[data-theme='dark'] div[style*="background: #fff"],
+[data-theme='dark'] div[style*="background:#fff"],
+[data-theme='dark'] div[style*="background: #ffffff"],
+[data-theme='dark'] div[style*="background:#ffffff"],
+[data-theme='dark'] div[style*="#f2f2f7"],
+[data-theme='dark'] div[style*="#f5f5f5"],
+[data-theme='dark'] div[style*="#e8e8ec"],
 [data-theme='dark'] div[style*="f9f9fb"],
-.dark-mode div[style*="background:white"],
 .dark-mode div[style*="background: white"],
-.dark-mode div[style*="#fff"],
-.dark-mode div[style*="#ffffff"],
-.dark-mode div[style*="f2f2f7"],
-.dark-mode div[style*="f9f9fb"] {
-  background: var(--card) !important;
-  color: var(--text) !important;
-  border-color: var(--border) !important;
+.dark-mode div[style*="background:white"],
+.dark-mode div[style*="background: #fff"],
+.dark-mode div[style*="background:#fff"],
+.dark-mode div[style*="#f2f2f7"],
+.dark-mode div[style*="#f5f5f5"],
+.dark-mode div[style*="#e8e8ec"] {
+  background: #1e1e1e !important;
+  color: #f0f0f0 !important;
 }
 
-/* Back button */
-[data-theme='dark'] button, .dark-mode button {
-  color: var(--text) !important;
+/* 5. Inline black text override - story chhung a dum kha */
+[data-theme='dark'] *[style*="color: black"],
+[data-theme='dark'] *[style*="color:black"],
+[data-theme='dark'] *[style*="color: #000"],
+[data-theme='dark'] *[style*="color:#000"],
+[data-theme='dark'] *[style*="color: #111"],
+[data-theme='dark'] *[style*="color:#111"],
+[data-theme='dark'] *[style*="color: #1a1a1a"],
+[data-theme='dark'] *[style*="color:#1a1a1a"],
+.dark-mode *[style*="color: black"],
+.dark-mode *[style*="color:black"],
+.dark-mode *[style*="color: #000"],
+.dark-mode *[style*="color: #111"],
+.dark-mode *[style*="color: #1a1a1a"] {
+  color: #f0f0f0 !important;
+}
+
+/* 6. Back button leh icon */
+[data-theme='dark'] button {
+  color: #f0f0f0 !important;
 }
