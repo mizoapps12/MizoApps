@@ -62,7 +62,7 @@ export default function Admin(){
   )
 
   return(
-    <div style={{minHeight:'100vh', background:'#f2f2f7', paddingTop:'10px'}}>
+    <div style={{minHeight:'100vh', background:'#f2f2f7', paddingTop:'75px'}}>
       {/* TAB - TUNAH CHU A CHUNG DUM HNUAIAH A AWM TAWH - A LANG NGEI ANG */}
       <div style={{margin:'12px', background:'#111', borderRadius:'16px', padding:'6px', display:'flex', gap:'6px'}}>
         <button onClick={()=>setTab('write')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='write'?'white':'transparent', color:tab==='write'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>✍️ WRITE STORY</button>
