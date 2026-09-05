@@ -81,7 +81,6 @@ export default function HomePage(){
               style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee'}}
             >
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
-                {/* 1. FONT TI LIAN - 12px atang 13.5px ah */}
                 <div style={{fontSize:'13.5px', fontWeight:'700', color: dark?'#aaa':'#888', display:'flex', gap:'4px', alignItems:'center', position:'relative', zIndex:5}}>
                   <span 
                     onClick={(e)=>{
@@ -111,20 +110,21 @@ export default function HomePage(){
                     </>
                   )}
                 </div>
-                {/* 2. TIME FONT TI LIAN - 11px atang 12.5px ah */}
                 <div style={{fontSize:'12.5px', fontWeight:'600', color: dark?'#888':'#888'}}>{timeAgo(story.createdAt)}</div>
               </div>
               <div onClick={()=>handleStoryClick(story.id)} style={{fontSize: `${fontSize+2}px`, fontWeight:'800', color: dark?'#ffffff':'#111111', marginBottom:'10px', lineHeight:'1.3', cursor:'pointer'}}>
                 {story.title}
               </div>
-              {/* 3. A PUM CLICK BO - READ MORE DAH */}
               <div style={{fontSize: `${fontSize-1}px`, color: dark?'#e5e5e5':'#333333', lineHeight:'1.6'}}>
                 <span style={{display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical', overflow:'hidden'}}>
                   {preview}...
                 </span>
-                <span onClick={()=>handleStoryClick(story.id)} style={{color:'#16a34a', fontWeight:'800', cursor:'pointer', marginTop:'6px', display:'inline-block'}}>
-                  Read more...
-                </span>
+                {/* DING LAM AH DAH */}
+                <div style={{textAlign:'right', marginTop:'10px'}}>
+                  <span onClick={()=>handleStoryClick(story.id)} style={{color:'#16a34a', fontWeight:'800', cursor:'pointer', fontSize:'14px'}}>
+                    Read more...
+                  </span>
+                </div>
               </div>
             </div>
           )
