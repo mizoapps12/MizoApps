@@ -30,9 +30,19 @@ export default function StoryPage({params}){
       const snap = await getDoc(doc(db,'stories', params.id))
       if(snap.exists()) setStory({id:snap.id, ...snap.data()})
       setLoading(false)
+      // DATA LO THLEN HNU AH BUL AH DAH LEH - HEI HI A PAWIMAWH
+      setTimeout(()=> window.scrollTo(0,0), 0)
+      setTimeout(()=> window.scrollTo(0,0), 150)
     }
     load()
   },[params.id])
+
+  // STORY A LO LAN HNU AH BUL AH DAH LEH
+  useEffect(()=>{
+    if(story){
+      window.scrollTo(0,0)
+    }
+  },[story])
 
   if(loading) return <div style={{paddingTop:'90px', textAlign:'center', background: dark?'#121212':'#f2f2f7', color: dark?'#fff':'#111', minHeight:'100vh'}}>Loading...</div>
   if(!story) return <div style={{paddingTop:'90px', textAlign:'center', background: dark?'#121212':'#f2f2f7', color: dark?'#fff':'#111', minHeight:'100vh'}}>Story hmuh loh</div>
@@ -69,4 +79,4 @@ export default function StoryPage({params}){
       </div>
     </div>
   )
-    }
+}
