@@ -28,8 +28,27 @@ export default function CategoryPage(){
     const load=async()=>{
       const snap = await getDocs(collection(db,'stories'))
       const all = snap.docs.map(d=>({id:d.id,...d.data()}))
+
+      // Admin map la ve - old leh new link ve a support nan
+      const mapSnap = await getDocs(collection(db,'categoryMap'))
+      const displayMap = {} // funny story -> Fiamthu
+      const reverseMap = {} // fiamthu -> funny story
+      mapSnap.docs.forEach(doc=>{
+        const data = doc.data()
+        displayMap[data.original.trim().toLowerCase()] = data.display
+        reverseMap[data.display.trim().toLowerCase()] = data.original.trim().toLowerCase()
+      })
+
       const lower = decoded.trim().toLowerCase()
-      const filtered = all.filter(s=> (s.category||'').trim().toLowerCase() === lower)
+      // decoded hi Fiamthu a nih chuan Funny Story zawng, Funny Story a nih chuan Fiamthu zawng
+      const searchOriginal = reverseMap[lower] || lower
+      const searchDisplay = displayMap[lower] || lower
+
+      const filtered = all.filter(s=> {
+        const catLower = (s.category||'').trim().toLowerCase()
+        // Story category hi Funny Story emaw Fiamthu emaw ve ve a nih chuan la
+        return catLower === lower || catLower === searchOriginal || catLower === searchDisplay
+      })
 
       const map = {}
       filtered.forEach(s=>{
@@ -55,9 +74,7 @@ export default function CategoryPage(){
       </div>
 
       <div style={{padding:'10px 14px'}}>
-        {/* LOGIC BER */}
         {subCats.length > 0 ? (
-          // 1. SUB A AWM CHUAN SUB HO LANG
           <div style={{display:'flex', flexDirection:'column', gap:'10px', marginTop:'6px'}}>
             {subCats.map(sc=>(
               <div key={sc.name} onClick={()=>router.push(`/series/${encodeURIComponent(sc.name)}`)} style={{background: dark?'#1e1e1e':'white', padding:'18px', borderRadius:'16px', border: dark?'1px solid #333':'1px solid #eee', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -67,8 +84,8 @@ export default function CategoryPage(){
             ))}
           </div>
         ) : (
-          // 2. SUB A AWM LOH CHUAN POST HO LANG MAI
           <div style={{display:'flex', flexDirection:'column', gap:'12px', marginTop:'6px'}}>
+            {stories.length===0 && <div style={{textAlign:'center', padding:'40px', color:'#888'}}>He category ah hian story a awm lo</div>}
             {stories.map(s=>{
               const preview = s.contentMizo? s.contentMizo.replace(/^\s*TITLE:\s*.*$/gim,'').trim().substring(0,140) : ''
               return(
