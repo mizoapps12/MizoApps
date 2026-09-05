@@ -120,7 +120,7 @@ export default function HomePage(){
                   {preview}...
                 </span>
                 {/* DING LAM AH DAH */}
-                <div style={{textAlign:'right', marginTop:'7px'}}>
+                <div style={{textAlign:'right', marginTop:'5px'}}>
                   <span onClick={()=>handleStoryClick(story.id)} style={{color:'#16a34a', fontWeight:'800', cursor:'pointer', fontSize:'14px'}}>
                     Read more...
                   </span>
