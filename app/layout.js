@@ -15,7 +15,12 @@ export default function RootLayout({ children }) {
                 try{
                   const theme = localStorage.getItem('theme');
                   const font = localStorage.getItem('siteFontSize');
-                  if(theme==='dark') document.documentElement.classList.add('dark-mode');
+                  if(theme==='dark'){
+                    document.documentElement.classList.add('dark-mode');
+                    document.documentElement.setAttribute('data-theme','dark');
+                  } else {
+                    document.documentElement.setAttribute('data-theme','light');
+                  }
                   if(font) document.documentElement.style.fontSize = font+'px';
                 }catch(e){}
               })()
