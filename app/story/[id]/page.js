@@ -17,9 +17,13 @@ function timeAgo(timestamp){
 }
 
 export default function StoryPage({params}){
-  const {dark, fontSize} = useSettings() // <-- FONT KA ADD
+  const {dark, fontSize} = useSettings()
   const [story,setStory]=useState(null)
   const [loading,setLoading]=useState(true)
+
+  useEffect(()=>{
+    window.scrollTo(0,0)
+  },[])
 
   useEffect(()=>{
     const load=async()=>{
@@ -37,7 +41,7 @@ export default function StoryPage({params}){
 
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'70px', transition:'background 0.3s'}}>
-      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer'}}>
+      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer', position:'sticky', top:'70px', zIndex:10, background: dark?'#121212':'#f2f2f7'}}>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
         </svg>
@@ -52,7 +56,6 @@ export default function StoryPage({params}){
             <div style={{fontSize:'12px', color: dark?'#aaa':'#888', whiteSpace:'nowrap', marginTop:'2px'}}>{timeAgo(story.createdAt)}</div>
           </div>
           
-          {/* HEI HI A PAWIMAWH - fontSize fixed 16px kha paih, fontSize settings hmang tawh */}
           <div style={{fontSize: `${fontSize}px`, lineHeight:'1.9', whiteSpace:'pre-wrap', color: dark?'#e5e5e5':'#111'}}>
             {cleanContent}
           </div>
@@ -66,4 +69,4 @@ export default function StoryPage({params}){
       </div>
     </div>
   )
-}
+    }
