@@ -30,14 +30,12 @@ export default function StoryPage({params}){
       const snap = await getDoc(doc(db,'stories', params.id))
       if(snap.exists()) setStory({id:snap.id, ...snap.data()})
       setLoading(false)
-      // DATA LO THLEN HNU AH BUL AH DAH LEH - HEI HI A PAWIMAWH
       setTimeout(()=> window.scrollTo(0,0), 0)
       setTimeout(()=> window.scrollTo(0,0), 150)
     }
     load()
   },[params.id])
 
-  // STORY A LO LAN HNU AH BUL AH DAH LEH
   useEffect(()=>{
     if(story){
       window.scrollTo(0,0)
@@ -50,8 +48,8 @@ export default function StoryPage({params}){
   const cleanContent = story.contentMizo ? story.contentMizo.replace(/^\s*TITLE:\s*.*$/gim, '').trim() : ''
 
   return(
-    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'60px', transition:'background 0.3s'}}>
-      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer', position:'sticky', top:'70px', zIndex:10, background: dark?'#121212':'#f2f2f7'}}>
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'70px', transition:'background 0.3s'}}>
+      <div onClick={()=>window.history.back()} style={{display:'flex', alignItems:'center', gap:'8px', padding:'12px 18px', cursor:'pointer'}}>
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={dark?'white':'black'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
         </svg>
@@ -79,4 +77,4 @@ export default function StoryPage({params}){
       </div>
     </div>
   )
-}
+    }
