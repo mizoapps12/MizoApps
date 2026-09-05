@@ -12,3 +12,6 @@ body { font-family: system-ui; background: var(--bg); color: var(--text); margin
 .menu-item { display: flex; align-items: center; gap: 18px; width: 100%; text-align: left; padding: 15px 18px; border: none; background: white; font-size: 16px; font-weight: 700; color: #111; cursor: pointer; text-decoration: none; }
 .menu-divider { height: 1px; background: #f0f0f0; }
 .overlay { position: fixed; top: 54px; left: 0; right: 0; bottom: 0; z-index: 999; background: transparent; }
+.dark-mode body { background:#121212 !important; color:white !important; }
+.dark-mode div { border-color:#333 !important; }
+html { transition: font-size 0.2s ease; }
