@@ -1,129 +1,93 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
-import { collection, getDocs } from 'firebase/firestore'
-import { useRouter } from 'next/navigation'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import Link from 'next/link'
 import { useSettings } from '../components/SettingsContext'
 
-export default function CategoriesAutoPage(){
+export default function CategoriesPage(){
   const {dark} = useSettings()
-  const router = useRouter()
-  const [cats, setCats] = useState([])
-  const [stories, setStories] = useState([])
-  const [openCat, setOpenCat] = useState('Funny Story')
-  const [loading, setLoading] = useState(true)
+  const [categories,setCategories]=useState([])
+  const [stories,setStories]=useState([])
+  const [openCat,setOpenCat]=useState(null)
+  const [filterSub,setFilterSub]=useState(null)
 
   useEffect(()=>{
-    const load = async()=>{
-      const catSnap = await getDocs(collection(db,'categories'))
-      const storySnap = await getDocs(collection(db,'stories'))
-      const mapSnap = await getDocs(collection(db,'categoryMap'))
-
-      const allStories = storySnap.docs.map(d=>({id:d.id,...d.data()}))
-      setStories(allStories)
-
-      // Mapping - Admin a i thlak te
-      const nameMap = {}
-      mapSnap.docs.forEach(d=>{
-        const data = d.data()
-        if(data.original && data.display){
-          nameMap[data.original.trim().toLowerCase()] = data.display
-        }
-      })
-      // Hard fix - i duh duh i thlak theih nan
-      const translate = {
-        'love story': 'Hmangaihna',
-        'funny story': 'Fiamthu',
-       ...nameMap
-      }
-
-      // Category list + count dik tak
-      const countMap = {}
-      allStories.forEach(s=>{
-        if(!s.category) return
-        const low = s.category.trim().toLowerCase()
-        const display = translate[low] || s.category
-        const key = display.toLowerCase()
-        countMap[key] = (countMap[key] || 0) + 1
-      })
-
-      let list = catSnap.docs.map(d=>{
-        const orig = (d.data().name || '').trim()
-        const display = translate[orig.toLowerCase()] || orig
-        return { id: d.id, orig, name: display, count: countMap[display.toLowerCase()] || 0 }
-      })
-
-      // Duplicate merge - Love Story leh Hmangaihna 1 a nih lo nan
-      const merged = {}
-      list.forEach(c=>{
-        const key = c.name.toLowerCase()
-        if(!merged[key]) merged[key] = c
-        else merged[key].count += c.count
-      })
-
-      // Count 0 pawh lang tho se, mahse a awm zat dik tak nen
-      setCats(Object.values(merged).sort((a,b)=>a.name.localeCompare(b.name)))
-      setLoading(false)
+    const load=async()=>{
+      const catSnap = await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
+      setCategories(catSnap.docs.map(d=>({id:d.id,...d.data()})))
+      
+      const storySnap = await getDocs(query(collection(db,'stories'), orderBy('createdAt','desc')))
+      setStories(storySnap.docs.map(d=>({id:d.id,...d.data()})))
     }
     load()
   },[])
 
-  const getStories = (catName)=>{
-    const lowCat = catName.toLowerCase()
+  const toggleCat=(catName)=>{
+    if(openCat===catName){ setOpenCat(null); setFilterSub(null) }
+    else{ setOpenCat(catName); setFilterSub(null) }
+  }
+
+  const getStoriesByCat=(catName, subName=null)=>{
     return stories.filter(s=>{
-      if(!s.category) return false
-      const sLow = s.category.trim().toLowerCase()
-      // Fiamthu = funny story, Hmangaihna = love story
-      if(lowCat === 'fiamthu') return sLow === 'fiamthu' || sLow === 'funny story'
-      if(lowCat === 'hmangaihna') return sLow === 'hmangaihna' || sLow === 'love story'
-      return sLow === lowCat
+      if(subName) return s.category===catName && s.subCategory===subName
+      return s.category===catName
     })
   }
 
-  if(loading) return <div style={{paddingTop:'90px', textAlign:'center'}}>Loading...</div>
-
   return(
-    <div style={{minHeight:'100vh', background:'#f2f2f7', paddingTop:'60px'}}>
-      <div style={{padding:'16px'}}>
-        <h2 style={{fontSize:'22px', fontWeight:'900', display:'flex', alignItems:'center', gap:'8px'}}>📚 Categories - AUTO</h2>
-        <p style={{fontSize:'13px', color:'#888', marginTop:'2px'}}>Admin ah i siam apiang hetah a lang nghal ang</p>
-      </div>
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', padding:'16px', paddingTop:'70px', transition:'background 0.3s'}}>
+      <h2 style={{fontWeight:'800', fontSize:'26px', margin:'10px 6px', color: dark?'#f0f0f0':'#111'}}>📚 Categories</h2>
 
-      <div style={{padding:'0 12px', display:'flex', flexDirection:'column', gap:'12px', paddingBottom:'30px'}}>
-        {cats.map(c=>{
-          const isOpen = openCat === c.name
-          const catStories = getStories(c.name)
-          return(
-            <div key={c.name} style={{background:'white', borderRadius:'18px', boxShadow:'0 1px 3px rgba(0,0,0,0.05)', overflow:'hidden'}}>
-              <div onClick={()=>setOpenCat(isOpen? null : c.name)} style={{padding:'16px', display:'flex', justifyContent:'space-between', alignItems:'center', cursor:'pointer'}}>
-                <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-                  <div style={{width:'44px', height:'44px', background:'#f1f1f3', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center'}}>📚</div>
-                  <div>
-                    <div style={{fontWeight:'800', fontSize:'15px'}}>{c.name}</div>
-                    <div style={{fontSize:'12px', color:'#888'}}>{c.count} stories</div>
+      {categories.map(cat=>{
+        const isOpen = openCat===cat.name
+        const catStories = getStoriesByCat(cat.name)
+        const hasSub = cat.subcategories && cat.subcategories.length>0
+
+        return(
+          <div key={cat.id} style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', marginBottom:'12px', border: dark?'1px solid #333':'1px solid #eee', overflow:'hidden', transition:'background 0.3s'}}>
+            {/* Category Row */}
+            <div onClick={()=>toggleCat(cat.name)} style={{display:'flex', alignItems:'center', padding:'16px', cursor:'pointer'}}>
+              <div style={{width:'48px', height:'48px', borderRadius:'12px', background: dark?'#2a2a2a':'#f2f2f7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px'}}>📚</div>
+              <div style={{flex:1, marginLeft:'14px'}}>
+                <div style={{fontWeight:'700', fontSize:'16px', color: dark?'#fff':'#111'}}>{cat.name}</div>
+                <div style={{fontSize:'14px', color: dark?'#888':'#888'}}>{catStories.length} stories {hasSub? `• ${cat.subcategories.length} sub` : ''}</div>
+              </div>
+              <div style={{width:'32px', height:'32px', borderRadius:'50%', background: dark?'#2a2a2a':'#f2f2f7', color: dark?'#fff':'#111', display:'flex', alignItems:'center', justifyContent:'center', transform:isOpen?'rotate(90deg)':'rotate(0deg)', transition:'0.2s'}}>›</div>
+            </div>
+
+            {/* Sub Category + Stories */}
+            {isOpen && (
+              <div style={{background: dark?'#181818':'#fafafb', borderTop: dark?'1px solid #333':'1px solid #eee', padding:'12px'}}>
+                {/* Sub Categories */}
+                {hasSub ? (
+                  <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
+                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>All ({catStories.length})</button>
+                    {cat.subcategories.map((sub,i)=>{
+                      const count = getStoriesByCat(cat.name, sub).length
+                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>{sub} ({count})</button>
+                    })}
                   </div>
-                </div>
-                <div style={{width:'32px', height:'32px', background:'#f1f1f3', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px'}}>
-                  {isOpen? '⌄' : '›'}
+                ) : null}
+
+                {/* Stories List */}
+                <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
+                  {getStoriesByCat(cat.name, filterSub).length===0 ? (
+                    <div style={{textAlign:'center', color:'#999', fontSize:'12px', padding:'20px'}}>Story a la awm lo</div>
+                  ) : (
+                    getStoriesByCat(cat.name, filterSub).map(story=>(
+                      <Link key={story.id} href={`/story/${story.id}`} style={{textDecoration:'none', background: dark?'#252525':'white', padding:'12px 14px', borderRadius:'12px', border: dark?'1px solid #333':'1px solid #eee', display:'block'}}>
+                        <div style={{fontWeight:'700', fontSize:'14px', color: dark?'#fff':'#111'}}>{story.title}</div>
+                        <div style={{fontSize:'11px', color: dark?'#aaa':'#888', marginTop:'2px'}}>{story.subCategory? `${story.category} › ${story.subCategory}` : story.category}</div>
+                      </Link>
+                    ))
+                  )}
                 </div>
               </div>
-
-              {isOpen && (
-                <div style={{padding:'0 10px 10px 10px'}}>
-                  {catStories.length === 0? (
-                    <div style={{padding:'12px', textAlign:'center', color:'#999', fontSize:'13px', background:'#fafafa', borderRadius:'12px'}}>Story a la awm lo</div>
-                  ) : catStories.map(s=>(
-                    <div key={s.id} onClick={()=>router.push(`/story/${s.id}`)} style={{padding:'14px', background:'#fff', border:'1px solid #f0f0f0', borderRadius:'14px', marginTop:'8px', cursor:'pointer'}}>
-                      <div style={{fontWeight:'700', fontSize:'14px', lineHeight:'1.3'}}>{s.title || 'Thil theihnghil chhungkhua'}</div>
-                      <div style={{fontSize:'12px', color:'#888', marginTop:'3px'}}>{c.name}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
-}
+}}
