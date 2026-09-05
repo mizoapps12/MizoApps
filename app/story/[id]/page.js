@@ -17,7 +17,7 @@ function timeAgo(timestamp){
 }
 
 export default function StoryPage({params}){
-  const {dark} = useSettings()
+  const {dark, fontSize} = useSettings() // <-- FONT KA ADD
   const [story,setStory]=useState(null)
   const [loading,setLoading]=useState(true)
 
@@ -45,19 +45,20 @@ export default function StoryPage({params}){
       </div>
 
       <div style={{padding:'10px 14px 30px 14px'}}>
-        <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'20px', border: dark?'1px solid #333':'1px solid #e5e5e5', transition:'background 0.3s'}}>
-          {/* TITLE zawn ah tawp ah TIME */}
+        <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'20px', border: dark?'1px solid #333':'1px solid #e5e5e5'}}>
+          
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'12px', marginBottom:'22px'}}>
-            <div style={{fontSize:'16px', fontWeight:'800', flex:1, color: dark?'#fff':'#111'}}>TITLE: {story.title}</div>
+            <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', flex:1, color: dark?'#fff':'#111'}}>TITLE: {story.title}</div>
             <div style={{fontSize:'12px', color: dark?'#aaa':'#888', whiteSpace:'nowrap', marginTop:'2px'}}>{timeAgo(story.createdAt)}</div>
           </div>
           
-          <div style={{fontSize:'16px', lineHeight:'1.9', whiteSpace:'pre-wrap', color: dark?'#e5e5e5':'#111'}}>
+          {/* HEI HI A PAWIMAWH - fontSize fixed 16px kha paih, fontSize settings hmang tawh */}
+          <div style={{fontSize: `${fontSize}px`, lineHeight:'1.9', whiteSpace:'pre-wrap', color: dark?'#e5e5e5':'#111'}}>
             {cleanContent}
           </div>
 
           {story.contentEng && (
-            <div style={{marginTop:'24px', paddingTop:'16px', borderTop: dark?'1px solid #333':'1px solid #eee', fontSize:'15px', lineHeight:'1.7', whiteSpace:'pre-wrap', color: dark?'#aaa':'#555'}}>
+            <div style={{marginTop:'24px', paddingTop:'16px', borderTop: dark?'1px solid #333':'1px solid #eee', fontSize: `${fontSize-1}px`, lineHeight:'1.7', whiteSpace:'pre-wrap', color: dark?'#aaa':'#555'}}>
               {story.contentEng}
             </div>
           )}
@@ -65,4 +66,4 @@ export default function StoryPage({params}){
       </div>
     </div>
   )
-    }
+}
