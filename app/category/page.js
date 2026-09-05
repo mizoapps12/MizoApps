@@ -1,67 +1,92 @@
 'use client'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
-import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import Link from 'next/link'
 
-const iconMap = {
-  'Love Story': { icon: '❤️', color: '#ff4d6d' },
-  'Funny Story': { icon: '😂', color: '#ffb703' },
-  'Horror Story': { icon: '👻', color: '#7b2cbf' },
-  'Science Fiction': { icon: '🚀', color: '#00b4d8' },
-  'Life Lesson Story': { icon: '🌱', color: '#2dc653' },
-  'Short story': { icon: '📖', color: '#ff8c00' },
-  'Motivational Story': { icon: '💪', color: '#ff5400' },
-  'Mizo Thawnthu': { icon: '🌾', color: '#007f5f' },
-  'Mimal Chanchin': { icon: '👤', color: '#3a86ff' },
-  'Thu tha lawrkhawm': { icon: '✨', color: '#8338ec' },
-  'Lawrkhawm': { icon: '📚', color: '#6b21a8' },
-}
-const defaultIcon = { icon: '📚', color: '#6b21a8' }
-
-export default function CategoryPage(){
-  const [cats,setCats]=useState([])
+export default function CategoriesPage(){
+  const [categories,setCategories]=useState([])
+  const [stories,setStories]=useState([])
+  const [openCat,setOpenCat]=useState(null) // category hming open mek
+  const [filterSub,setFilterSub]=useState(null)
 
   useEffect(()=>{
     const load=async()=>{
-      try{
-        const snap=await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
-        setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
-      }catch(e){
-        const snap=await getDocs(collection(db,'categories'))
-        setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
-      }
+      const catSnap = await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
+      setCategories(catSnap.docs.map(d=>({id:d.id,...d.data()})))
+      
+      const storySnap = await getDocs(query(collection(db,'stories'), orderBy('createdAt','desc')))
+      setStories(storySnap.docs.map(d=>({id:d.id,...d.data()})))
     }
     load()
   },[])
 
+  const toggleCat=(catName)=>{
+    if(openCat===catName){ setOpenCat(null); setFilterSub(null) }
+    else{ setOpenCat(catName); setFilterSub(null) }
+  }
+
+  const getStoriesByCat=(catName, subName=null)=>{
+    return stories.filter(s=>{
+      if(subName) return s.category===catName && s.subCategory===subName
+      return s.category===catName
+    })
+  }
+
   return(
-    <div className="container">
-      <h2 style={{fontWeight:'800', marginBottom:'16px'}}>📚 Categories - AUTO</h2>
-      <p style={{color:'#888', fontSize:'13px', marginBottom:'12px'}}>Admin ah i siam apiang hetah a lang nghal ang</p>
-      
-      <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
-        {cats.map((c)=>{
-          const style=iconMap[c.name] || defaultIcon
-          return(
-            <Link key={c.id} href={`/category/${encodeURIComponent(c.name)}`} style={{textDecoration:'none'}}>
-              <div style={{background:'white', borderRadius:'16px', padding:'14px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 2px 12px rgba(0,0,0,0.06)', border:'1px solid #f0f0f0'}}>
-                <div style={{display:'flex', alignItems:'center', gap:'14px'}}>
-                  <div style={{width:'46px', height:'46px', borderRadius:'12px', background:`${style.color}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px'}}>
-                    {style.icon}
-                  </div>
-                  <div>
-                    <div style={{fontWeight:'700', fontSize:'16px', color:'#111'}}>{c.name}</div>
-                    {c.subcategories?.length>0 && <div style={{fontSize:'11px', color:'#888'}}>{c.subcategories.length} sub</div>}
-                  </div>
-                </div>
-                <div style={{width:'32px', height:'32px', borderRadius:'50%', background:'#f5f5f7', display:'flex', alignItems:'center', justifyContent:'center', color:'#888', fontSize:'18px', fontWeight:'700'}}>›</div>
+    <div style={{minHeight:'100vh', background:'#f2f2f7', padding:'16px', paddingTop:'75px'}}>
+      <h2 style={{fontWeight:'800', fontSize:'26px', margin:'10px 6px'}}>📚 Categories - AUTO</h2>
+      <p style={{color:'#888', fontSize:'13px', margin:'0 6px 16px 6px'}}>Admin ah i siam apiang hetah a lang nghal ang</p>
+
+      {categories.map(cat=>{
+        const isOpen = openCat===cat.name
+        const catStories = getStoriesByCat(cat.name)
+        const hasSub = cat.subcategories && cat.subcategories.length>0
+
+        return(
+          <div key={cat.id} style={{background:'white', borderRadius:'18px', marginBottom:'12px', border:'1px solid #eee', overflow:'hidden'}}>
+            {/* Category Row - Icon inang vek 📚 */}
+            <div onClick={()=>toggleCat(cat.name)} style={{display:'flex', alignItems:'center', padding:'16px', cursor:'pointer'}}>
+              <div style={{width:'48px', height:'48px', borderRadius:'12px', background:'#f2f2f7', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px'}}>📚</div>
+              <div style={{flex:1, marginLeft:'14px'}}>
+                <div style={{fontWeight:'700', fontSize:'16px'}}>{cat.name}</div>
+                <div style={{fontSize:'11px', color:'#888'}}>{catStories.length} stories {hasSub? `• ${cat.subcategories.length} sub` : ''}</div>
               </div>
-            </Link>
-          )
-        })}
-        {cats.length===0 && <p style={{textAlign:'center', color:'#888', marginTop:'30px'}}>Loading... /admin/categories ah lut hmasa rawh</p>}
-      </div>
+              <div style={{width:'32px', height:'32px', borderRadius:'50%', background:'#f2f2f7', display:'flex', alignItems:'center', justifyContent:'center', transform:isOpen?'rotate(90deg)':'rotate(0deg)', transition:'0.2s'}}>›</div>
+            </div>
+
+            {/* Sub Category + Stories - Click in auto lang */}
+            {isOpen && (
+              <div style={{background:'#fafafb', borderTop:'1px solid #eee', padding:'12px'}}>
+                {/* Sub Categories */}
+                {hasSub ? (
+                  <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
+                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border:'none', background:!filterSub?'#111':'white', color:!filterSub?'white':'#111', fontSize:'12px', fontWeight:'700', border:'1px solid #ddd'}}>All ({catStories.length})</button>
+                    {cat.subcategories.map((sub,i)=>{
+                      const count = getStoriesByCat(cat.name, sub).length
+                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border:'none', background:filterSub===sub?'#111':'white', color:filterSub===sub?'white':'#111', fontSize:'12px', fontWeight:'700', border:'1px solid #ddd'}}>{sub} ({count})</button>
+                    })}
+                  </div>
+                ) : null}
+
+                {/* Stories List - Category thlan mil zel a lang */}
+                <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
+                  {getStoriesByCat(cat.name, filterSub).length===0 ? (
+                    <div style={{textAlign:'center', color:'#999', fontSize:'12px', padding:'20px'}}>Story a la awm lo</div>
+                  ) : (
+                    getStoriesByCat(cat.name, filterSub).map(story=>(
+                      <Link key={story.id} href={`/story/${story.id}`} style={{textDecoration:'none', background:'white', padding:'12px 14px', borderRadius:'12px', border:'1px solid #eee', display:'block'}}>
+                        <div style={{fontWeight:'700', fontSize:'14px', color:'#111'}}>{story.title}</div>
+                        <div style={{fontSize:'11px', color:'#888', marginTop:'2px'}}>{story.subCategory? `${story.category} › ${story.subCategory}` : story.category}</div>
+                      </Link>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
-          }
+                                                           }
