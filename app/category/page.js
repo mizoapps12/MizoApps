@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, orderBy, query } from 'firebase/firestore'
 
-const iconMap: any = {
+const iconMap = {
   'Love Story': { icon: '❤️', color: '#ff4d6d' },
   'Funny Story': { icon: '😂', color: '#ffb703' },
   'Horror Story': { icon: '👻', color: '#7b2cbf' },
@@ -20,12 +20,17 @@ const iconMap: any = {
 const defaultIcon = { icon: '📚', color: '#6b21a8' }
 
 export default function CategoryPage(){
-  const [cats,setCats]=useState<any[]>([])
+  const [cats,setCats]=useState([])
 
   useEffect(()=>{
     const load=async()=>{
-      const snap=await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
-      setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
+      try{
+        const snap=await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
+        setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
+      }catch(e){
+        const snap=await getDocs(collection(db,'categories'))
+        setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
+      }
     }
     load()
   },[])
@@ -55,8 +60,8 @@ export default function CategoryPage(){
             </Link>
           )
         })}
-        {cats.length===0 && <p style={{textAlign:'center', color:'#888', marginTop:'30px'}}>Category ala awm lo... /admin/categories ah siam rawh</p>}
+        {cats.length===0 && <p style={{textAlign:'center', color:'#888', marginTop:'30px'}}>Loading... /admin/categories ah lut hmasa rawh</p>}
       </div>
     </div>
   )
-}
+          }
