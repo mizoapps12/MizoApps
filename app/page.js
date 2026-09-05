@@ -40,9 +40,11 @@ export default function HomePage(){
     if(loading) return
     const savedScroll = sessionStorage.getItem('home-scroll-y')
     const savedVisible = sessionStorage.getItem('home-visible')
+    
     if(savedVisible){
       setVisible(parseInt(savedVisible))
     }
+    
     if(savedScroll){
       setTimeout(()=>{
         window.scrollTo({top: parseInt(savedScroll), behavior: 'instant'})
@@ -88,7 +90,7 @@ export default function HomePage(){
                       sessionStorage.setItem('home-visible', visible.toString())
                       router.push(`/category/${encodeURIComponent(story.category)}`)
                     }} 
-                    style={{cursor:'pointer', textDecoration:'underline', color:'#007AFF'}}
+                    style={{cursor:'pointer', color:'#16a34a', fontWeight:'800'}}
                   >
                     {story.category}
                   </span>
@@ -102,7 +104,7 @@ export default function HomePage(){
                           sessionStorage.setItem('home-visible', visible.toString())
                           router.push(`/series/${encodeURIComponent(story.subCategory)}`)
                         }} 
-                        style={{cursor:'pointer', textDecoration:'underline', color:'#007AFF'}}
+                        style={{cursor:'pointer', color:'#16a34a', fontWeight:'800'}}
                       >
                         {story.subCategory}
                       </span>
@@ -136,4 +138,4 @@ export default function HomePage(){
       )}
     </div>
   )
-            }
+}
