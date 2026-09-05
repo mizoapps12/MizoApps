@@ -20,6 +20,7 @@ function timeAgo(timestamp){
 export default function HomePage(){
   const {dark, fontSize} = useSettings()
   const [stories,setStories]=useState([])
+  const [visible,setVisible]=useState(16)
   const [loading,setLoading]=useState(true)
 
   useEffect(()=>{
@@ -31,6 +32,26 @@ export default function HomePage(){
     load()
   },[])
 
+  // SCROLL SAVE - I awm na ngai ah kir leh
+  useEffect(()=>{
+    const savedScroll = sessionStorage.getItem('home-scroll-y')
+    const savedVisible = sessionStorage.getItem('home-visible')
+    if(savedVisible) setVisible(parseInt(savedVisible))
+    if(savedScroll){
+      setTimeout(()=> window.scrollTo(0, parseInt(savedScroll)), 150)
+    }
+    const handleScroll = () => {
+      sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  },[loading])
+
+  const handleStoryClick = () => {
+    sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+    sessionStorage.setItem('home-visible', visible.toString())
+  }
+
   if(loading){
     return <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'80px', textAlign:'center', color: dark?'white':'#111'}}>Loading...</div>
   }
@@ -38,11 +59,11 @@ export default function HomePage(){
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', padding:'12px', paddingTop:'70px'}}>
       <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
-        {stories.map(story=>{
+        {stories.slice(0, visible).map(story=>{
           const preview = story.contentMizo ? story.contentMizo.replace(/^\s*TITLE:\s*.*$/gim, '').trim().substring(0,140) : ''
           const catDisplay = story.subCategory ? `${story.category} > ${story.subCategory}` : story.category
           return(
-            <Link key={story.id} href={`/story/${story.id}`} style={{textDecoration:'none'}}>
+            <Link key={story.id} href={`/story/${story.id}`} onClick={handleStoryClick} style={{textDecoration:'none'}}>
               <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee'}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
                   <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888'}}>{catDisplay}</div>
@@ -59,6 +80,23 @@ export default function HomePage(){
           )
         })}
       </div>
+
+      {visible < stories.length && (
+        <button
+          onClick={()=>{
+            const newV = visible + 16
+            setVisible(newV)
+            sessionStorage.setItem('home-visible', newV.toString())
+          }}
+          style={{width:'100%', marginTop:'16px', padding:'14px', background:'#007AFF', color:'white', border:'none', borderRadius:'14px', fontWeight:'700', fontSize:'15px'}}
+        >
+          Load More ({visible} / {stories.length})
+        </button>
+      )}
+
+      {visible >= stories.length && stories.length > 0 && (
+        <div style={{textAlign:'center', marginTop:'16px', color:'#888', fontSize:'13px'}}>A tawp thleng i en zo ta!</div>
+      )}
     </div>
   )
-          }
+                  }
