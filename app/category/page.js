@@ -36,9 +36,8 @@ export default function CategoriesPage(){
   }
 
   return(
-    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', padding:'16px', paddingTop:'75px', transition:'background 0.3s'}}>
-      <h2 style={{fontWeight:'800', fontSize:'26px', margin:'10px 6px', color: dark?'#f0f0f0':'#111'}}>📚 Categories - AUTO</h2>
-      <p style={{color: dark?'#aaa':'#888', fontSize:'13px', margin:'0 6px 16px 6px'}}>Admin ah i siam apiang hetah a lang nghal ang</p>
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', padding:'16px', paddingTop:'70px', transition:'background 0.3s'}}>
+      <h2 style={{fontWeight:'800', fontSize:'26px', margin:'10px 6px', color: dark?'#f0f0f0':'#111'}}>📚 Categories</h2>
 
       {categories.map(cat=>{
         const isOpen = openCat===cat.name
@@ -63,10 +62,10 @@ export default function CategoriesPage(){
                 {/* Sub Categories */}
                 {hasSub ? (
                   <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
-                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'12px', fontWeight:'700'}}>All ({catStories.length})</button>
+                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>All ({catStories.length})</button>
                     {cat.subcategories.map((sub,i)=>{
                       const count = getStoriesByCat(cat.name, sub).length
-                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'12px', fontWeight:'700'}}>{sub} ({count})</button>
+                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>{sub} ({count})</button>
                     })}
                   </div>
                 ) : null}
