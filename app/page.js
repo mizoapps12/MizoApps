@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useSettings } from './components/SettingsContext'
 
 function timeAgo(timestamp){
@@ -19,6 +20,7 @@ function timeAgo(timestamp){
 
 export default function HomePage(){
   const {dark, fontSize} = useSettings()
+  const router = useRouter()
   const [stories,setStories]=useState([])
   const [visible,setVisible]=useState(16)
   const [loading,setLoading]=useState(true)
@@ -68,6 +70,22 @@ export default function HomePage(){
     sessionStorage.setItem('home-visible', visible.toString())
   }
 
+  const handleCategoryClick = (e, category) => {
+    e.preventDefault()
+    e.stopPropagation()
+    sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+    sessionStorage.setItem('home-visible', visible.toString())
+    router.push(`/category/${encodeURIComponent(category)}`)
+  }
+
+  const handleSubCategoryClick = (e, subCategory) => {
+    e.preventDefault()
+    e.stopPropagation()
+    sessionStorage.setItem('home-scroll-y', window.scrollY.toString())
+    sessionStorage.setItem('home-visible', visible.toString())
+    router.push(`/series/${encodeURIComponent(subCategory)}`)
+  }
+
   if(loading){
     return <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'80px', textAlign:'center', color: dark?'white':'#111'}}>Loading...</div>
   }
@@ -77,7 +95,6 @@ export default function HomePage(){
       <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
         {stories.slice(0, visible).map(story=>{
           const preview = story.contentMizo ? story.contentMizo.replace(/^\s*TITLE:\s*.*$/gim, '').trim().substring(0,140) : ''
-          const catDisplay = story.subCategory ? `${story.category} > ${story.subCategory}` : story.category
           return(
             <Link 
               key={story.id} 
@@ -88,7 +105,15 @@ export default function HomePage(){
             >
               <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee'}}>
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
-                  <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888'}}>{catDisplay}</div>
+                  <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888', display:'flex', gap:'4px', alignItems:'center'}}>
+                    <span onClick={(e)=>handleCategoryClick(e, story.category)} style={{cursor:'pointer', textDecoration:'underline'}}>{story.category}</span>
+                    {story.subCategory && (
+                      <>
+                        <span>{'>'}</span>
+                        <span onClick={(e)=>handleSubCategoryClick(e, story.subCategory)} style={{cursor:'pointer', textDecoration:'underline'}}>{story.subCategory}</span>
+                      </>
+                    )}
+                  </div>
                   <div style={{fontSize:'11px', color: dark?'#777':'#999'}}>{timeAgo(story.createdAt)}</div>
                 </div>
                 <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', color: dark?'#ffffff':'#111111', marginBottom:'10px', lineHeight:'1.3'}}>
@@ -117,4 +142,4 @@ export default function HomePage(){
       )}
     </div>
   )
-}
+            }
