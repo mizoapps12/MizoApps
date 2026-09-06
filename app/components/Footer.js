@@ -14,7 +14,7 @@ export default function Footer(){
           <a href="/settings" style={{color:'#aaa', textDecoration:'none', fontSize:'13px'}}>Settings</a>
         </div>
         <div style={{color:'#666', fontSize:'12px', lineHeight:'1.4'}}>
-          © 2026 MizoApps.in - Mizo Apps & Games te awlsam taka download na<br/>
+          © 2026 MizoApps.in - Mizo thawnthu & English Story Mizo tawnga chhiarna hmunpui<br/>
           Made with ❤️ for Mizo People
         </div>
       </div>
