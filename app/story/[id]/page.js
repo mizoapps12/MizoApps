@@ -84,7 +84,7 @@ export default function StoryPage({params}){
         <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'20px', border: dark?'1px solid #333':'1px solid #e5e5e5'}}>
           
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'12px', marginBottom:'22px'}}>
-            <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', flex:1, color: dark?'#fff':'#111'}}>TITLE: {story.title}</div>
+            <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', flex:1, color: dark?'#fff':'#111'}}>Title: {story.title}</div>
             <div style={{fontSize:'12px', color: dark?'#aaa':'#888', whiteSpace:'nowrap', marginTop:'2px'}}>{timeAgo(story.createdAt)}</div>
           </div>
           
