@@ -1,63 +1,83 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, arrayUnion, serverTimestamp, orderBy, query } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
 
-const DEFAULT_CATS = [
-  'Love Story','Funny Story','Horror Story','Science Fiction','Life Lesson Story','Short story','Motivational Story','Mizo Thawnthu','Mimal Chanchin','Thu tha lawrkhawm','Lawrkhawm'
-]
+export default function CategoryMapAdmin(){
+  const [maps, setMaps] = useState([])
+  const [newOriginal, setNewOriginal] = useState('')
+  const [newDisplay, setNewDisplay] = useState('')
 
-export default function ManageCategory(){
-  const [cats,setCats]=useState([])
-  const [newCat,setNewCat]=useState('')
-  const [subInputs,setSubInputs]=useState({})
-
-  const fetchCats=async()=>{
-    let snap=await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
-    if(snap.empty){
-      for(let name of DEFAULT_CATS){
-        await addDoc(collection(db,'categories'),{name, subcategories:[], createdAt:serverTimestamp()})
-      }
-      snap=await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
-    }
-    setCats(snap.docs.map(d=>({id:d.id,...d.data()})))
+  const load = async()=>{
+    const snap = await getDocs(collection(db,'categoryMap'))
+    setMaps(snap.docs.map(d=>({id:d.id, ...d.data()})))
   }
-  useEffect(()=>{fetchCats()},[])
+  useEffect(()=>{ load() },[])
 
-  const addCategory=async()=>{
-    if(!newCat.trim()) return
-    await addDoc(collection(db,'categories'),{name:newCat.trim(), subcategories:[], createdAt:serverTimestamp()})
-    setNewCat(''); fetchCats()
+  const handleUpdate = async(id, newDisplayName)=>{
+    await updateDoc(doc(db,'categoryMap', id), { display: newDisplayName })
+    alert('Thlak fel! ✅')
+    load()
   }
-  const addSub=async(id)=>{
-    const sub=subInputs[id]?.trim()
-    if(!sub) return
-    await updateDoc(doc(db,'categories',id),{subcategories: arrayUnion(sub)})
-    setSubInputs({...subInputs,[id]:''}); fetchCats()
-  }
-  const delCat=async(id)=>{ if(confirm('Delete duh em?')){ await deleteDoc(doc(db,'categories',id)); fetchCats() } }
 
-  const delSub=async(catId, subName)=>{
-    if(!confirm(`${subName} delete duh em?`)) return
-    const cat=cats.find(c=>c.id===catId)
-    const newSubs=(cat.subcategories||[]).filter(s=>s!==subName)
-    await updateDoc(doc(db,'categories',catId),{subcategories:newSubs})
-    fetchCats()
+  const handleAdd = async()=>{
+    if(!newOriginal || !newDisplay) return alert('Fill rawh!')
+    await addDoc(collection(db,'categoryMap'),{
+      original: newOriginal.trim(),
+      display: newDisplay.trim(),
+      createdAt: serverTimestamp()
+    })
+    setNewOriginal('')
+    setNewDisplay('')
+    alert('Add success! ✅')
+    load()
+  }
+
+  const handleDelete = async(id)=>{
+    if(!confirm('Delete duh em?')) return
+    await deleteDoc(doc(db,'categoryMap', id))
+    load()
   }
 
   return(
-    <div className="container">
-      <h2 style={{fontWeight:'800'}}>📚 Category Manage</h2>
-      <p style={{color:'#888', fontSize:'12px'}}>Hetah i siam apiang Admin leh Category page ah auto in a lang ang</p>
-      <div style={{display:'flex',gap:'10px',margin:'15px 0'}}>
-        <input value={newCat} onChange={e=>setNewCat(e.target.value)} placeholder="Category thar - entir nan: Bialnu" style={{flex:1, padding:'12px', borderRadius:'10px', border:'1px solid #ddd'}}/>
-        <button onClick={addCategory} className="btn">Add</button>
+    <div style={{minHeight:'100vh', background:'#f2f2f7', padding:'20px', paddingTop:'70px'}}>
+      <div style={{maxWidth:'500px', margin:'0 auto'}}>
+        <h2 style={{fontWeight:'800', fontSize:'20px', marginBottom:'16px'}}>Category Hming Thlakna</h2>
+
+        {/* Add thar */}
+        <div style={{background:'white', borderRadius:'16px', padding:'16px', marginBottom:'16px', display:'flex', flexDirection:'column', gap:'10px'}}>
+          <input value={newOriginal} onChange={e=>setNewOriginal(e.target.value)} placeholder="Original (Ent: Funny Story)" style={{height:'44px', border:'1px solid #ddd', borderRadius:'10px', padding:'0 12px'}}/>
+          <input value={newDisplay} onChange={e=>setNewDisplay(e.target.value)} placeholder="Display (Ent: Fiamthu)" style={{height:'44px', border:'1px solid #ddd', borderRadius:'10px', padding:'0 12px'}}/>
+          <button onClick={handleAdd} style={{height:'44px', background:'#16a34a', color:'white', border:'none', borderRadius:'10px', fontWeight:'700'}}>Add / Save</button>
+        </div>
+
+        {/* List */}
+        <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+          {maps.map(m=>(
+            <div key={m.id} style={{background:'white', borderRadius:'12px', padding:'14px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <div>
+                <div style={{fontSize:'13px', color:'#888'}}>{m.original || '(ruak - delete rawh)'}</div>
+                <input 
+                  defaultValue={m.display} 
+                  id={`input-${m.id}`}
+                  style={{fontSize:'16px', fontWeight:'700', border:'1px solid #ddd', borderRadius:'8px', padding:'4px 8px', marginTop:'4px'}}
+                />
+              </div>
+              <div style={{display:'flex', gap:'8px'}}>
+                <button onClick={()=>{
+                  const val = document.getElementById(`input-${m.id}`).value
+                  handleUpdate(m.id, val)
+                }} style={{background:'#007AFF', color:'white', border:'none', borderRadius:'8px', padding:'8px 12px', fontWeight:'700'}}>Save</button>
+                <button onClick={()=>handleDelete(m.id)} style={{background:'#ff3b30', color:'white', border:'none', borderRadius:'8px', padding:'8px 10px'}}>X</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{marginTop:'20px', fontSize:'12px', color:'#888', textAlign:'center'}}>
+          I thlak tawh chuan Home & Category page ah auto in a inthlak ang. Firebase console a tih a ngai lo.
+        </div>
       </div>
-      {cats.map(c=><div key={c.id} className="card">
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><b style={{fontSize:'16px'}}>{c.name}</b><button onClick={()=>delCat(c.id)} style={{background:'#fee',color:'red',border:'none',padding:'6px 12px',borderRadius:'8px',cursor:'pointer'}}>Delete</button></div>
-        <div style={{display:'flex',gap:'8px',marginTop:'10px'}}><input value={subInputs[c.id]||''} onChange={e=>setSubInputs({...subInputs,[c.id]:e.target.value})} placeholder="Sub category" style={{flex:1,padding:'10px',borderRadius:'8px',border:'1px solid #ddd'}}/><button onClick={()=>addSub(c.id)} style={{background:'#ff6b00',color:'white',border:'none',padding:'10px 14px',borderRadius:'8px',fontWeight:'700',cursor:'pointer'}}>+ Add</button></div>
-        <div style={{display:'flex',gap:'6px',flexWrap:'wrap',marginTop:'10px'}}>{(c.subcategories||[]).map((s,i)=><span key={i} style={{background:'#e8e8ec',padding:'5px 12px',borderRadius:'20px',fontSize:'12px',display:'flex',gap:'6px',alignItems:'center'}}>{s} <span onClick={()=>delSub(c.id,s)} style={{cursor:'pointer', color:'red', fontWeight:'700'}}>x</span></span>)}</div>
-      </div>)}
     </div>
   )
-        }
+    }
