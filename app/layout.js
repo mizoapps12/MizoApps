@@ -2,7 +2,10 @@ import './globals.css'
 import Header from './components/Header'
 import { SettingsProvider } from './components/SettingsContext'
 
-export const metadata = { title: 'MizoApps', description: 'Mizo thawnthu tha ber' }
+export const metadata = { 
+  title: 'MizoApps - Mizo Tawnga Story Hrang Hrang Chhiarna', 
+  description: 'Mizo tawnga story hrang hrang, love story, thawnthu ngaihnawm leh chanchin ngaihnawm tak tak chhiarna hmunpui.' 
+}
 
 export default function RootLayout({ children }) {
   return (
