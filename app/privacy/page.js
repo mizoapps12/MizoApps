@@ -3,13 +3,13 @@ export default function Privacy(){
     <div className="container">
       <h2>🔒 Privacy Policy</h2>
       <div className="card">
-        <p><b>MizoApps</b> chuan i data kan zah sak a ni.</p>
-        <p>1. I thawnthu chhiar duh zawng kan save lo.</p>
+        <p><b>MizoApps.in</b></p>
+        <p>1. Thawnthu te hi aneitu phalna lo chuan Copy phal a nilo.</p>
         <p>2. Email leh password Admin tan chauh a ni.</p>
-        <p>3. Ads emaw tracking emaw kan hmang lo.</p>
-        <p>4. I chhiar tawh thawnthu te i phone ah chauh a in save.</p>
+        <p>3. Aneitu phalna lo chuan Story te hi Youtube a chhuah atan chhiar phal anilo.</p>
+        <p>4. Story dah i duh chuan admin te be rawh.</p>
         <br/>
-        <p>Contact: mizoapps@gmail.com</p>
+        <p>Contact: mizoapps12@gmail.com</p>
       </div>
     </div>
   )
