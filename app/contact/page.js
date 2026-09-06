@@ -3,14 +3,13 @@ export default function Contact(){
     <div className="container">
       <h2>📩 Contact Us</h2>
       <div className="card">
-        <p>Thawnthu thar rawn thawh i duh em? Harsatna i nei em?</p>
+        <p>A hnuai ami te atang hian min rawn be thei ang</p>
         <br/>
-        <p>📧 Email: mizoapps@gmail.com</p>
-        <p>📱 WhatsApp: +91 12345 67890</p>
-        <p>🌐 Website: mizo-apps.vercel.app</p>
+        <p>📧 Email: mizoapps12@gmail.com</p>
+        <p>📱 WhatsApp: +91 7005697815</p>
+        <p>🌐 Website: mizoapps.in</p>
         <br/>
-        <p>Mizo tawng tihhmasawn nan kan thawk dun zel ang!</p>
-      </div>
+       </div>
     </div>
   )
     }
