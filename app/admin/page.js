@@ -23,6 +23,9 @@ export default function Admin(){
   const [editId,setEditId]=useState(null)
   const [editName,setEditName]=useState('')
   const [saving,setSaving]=useState(false)
+  // *** HEI CHIAH KA BELH - STORY EDIT TAN ***
+  const [allStories,setAllStories]=useState([])
+  const [editStoryId,setEditStoryId]=useState(null)
 
   useEffect(()=>{ const unsub = onAuthStateChanged(auth, (u)=>{ setUser(u); setLoading(false) }); return ()=>unsub() },[])
 
@@ -37,11 +40,58 @@ export default function Admin(){
     if(list.length>0 &&!form.category){ setSelCat(list[0]); setForm(f=>({...f, category:list[0].name})) }
     else if(form.category){ setSelCat(list.find(c=>c.name===form.category)||null) }
   }
-  useEffect(()=>{ if(user) loadCats() },[user])
+  useEffect(()=>{ if(user) { loadCats(); loadAllStories() } },[user])
+
+  // *** HEI CHIAH KA BELH ***
+  const loadAllStories=async()=>{
+    try{
+      const s = await getDocs(query(collection(db,'stories'), orderBy('createdAt','desc')))
+      setAllStories(s.docs.map(d=>({id:d.id,...d.data()})))
+    }catch(e){
+      const s = await getDocs(collection(db,'stories'))
+      const list = s.docs.map(d=>({id:d.id,...d.data()}))
+      list.sort((a,b)=>{
+        const ta = a.createdAt?.toDate? a.createdAt.toDate() : new Date(a.createdAt||0)
+        const tb = b.createdAt?.toDate? b.createdAt.toDate() : new Date(b.createdAt||0)
+        return tb - ta
+      })
+      setAllStories(list)
+    }
+  }
+  const startEditStory=(story)=>{
+    setForm({title:story.title, category:story.category, subCategory:story.subCategory||'', contentMizo:story.contentMizo, contentEng:story.contentEng||''})
+    setEditStoryId(story.id)
+    setTab('write')
+    window.scrollTo(0,0)
+  }
+  const deleteStory=async(id)=>{
+    if(confirm('He story hi delete duh em?')){
+      await deleteDoc(doc(db,'stories',id))
+      loadAllStories()
+    }
+  }
+  const cancelEditStory=()=>{
+    setEditStoryId(null)
+    setForm({title:'',category:categories[0]?.name||'', subCategory:'', contentMizo:'',contentEng:''})
+  }
 
   const login=async()=>{ try{await signInWithEmailAndPassword(auth,email,pass)}catch(e){alert(e.message)} }
   const logout=async()=>{ await signOut(auth) }
-  const publish=async()=>{ if(!form.title||!form.category||!form.contentMizo) return alert('A kim lo!'); await addDoc(collection(db,'stories'),{...form, createdAt:serverTimestamp()}); alert('Published!'); setForm({title:'',category:categories[0]?.name||'', subCategory:'', contentMizo:'',contentEng:''}) }
+
+  // *** PUBLISH HI KA THLAK TLEM - EDIT THEIH TURIN ***
+  const publish=async()=>{
+    if(!form.title||!form.category||!form.contentMizo) return alert('A kim lo!');
+    if(editStoryId){
+      await updateDoc(doc(db,'stories',editStoryId),{...form})
+      alert('Edited!');
+      setEditStoryId(null)
+    }else{
+      await addDoc(collection(db,'stories'),{...form, createdAt:serverTimestamp()});
+      alert('Published!');
+    }
+    setForm({title:'',category:categories[0]?.name||'', subCategory:'', contentMizo:'',contentEng:''})
+    loadAllStories()
+  }
 
   const addCategory=async()=>{ if(!newCat.trim()) return; await addDoc(collection(db,'categories'),{name:newCat.trim(), subcategories:[], createdAt:serverTimestamp()}); setNewCat(''); loadCats() }
   const addSub=async(id)=>{ const sub=subInputs[id]?.trim(); if(!sub) return; await updateDoc(doc(db,'categories',id),{subcategories: arrayUnion(sub)}); setSubInputs({...subInputs,[id]:''}); loadCats() }
@@ -49,7 +99,6 @@ export default function Admin(){
   const delSub=async(catId, subName)=>{ const cat=categories.find(c=>c.id===catId); const newSubs=(cat.subcategories||[]).filter(s=>s!==subName); await updateDoc(doc(db,'categories',catId),{subcategories:newSubs}); loadCats() }
   const startEdit=(c)=>{ setEditId(c.id); setEditName(c.name) }
 
-  // HEI HI A DIK TAWH - STORY ZAWNG ZAWNG A THLAK VEK ANG
   const saveEdit=async()=>{
     if(!editName.trim()) return
     const oldCat = categories.find(c=>c.id===editId)
@@ -62,28 +111,23 @@ export default function Admin(){
 
     setSaving(true)
     try{
-      // 1. categories collection thlak
       await updateDoc(doc(db,'categories',editId),{name:newName})
-
-      // 2. stories zawng zawng thlak - Hei hi a pawimawh ber!
       const storySnap = await getDocs(query(collection(db,'stories'), where('category','==', oldName)))
       const batch = writeBatch(db)
       storySnap.docs.forEach(d=>{
         batch.update(doc(db,'stories', d.id), { category: newName })
       })
       await batch.commit()
-
-      // 3. categoryMap siam - Home page in Fiamthu a hriat theih nan
       await addDoc(collection(db,'categoryMap'), {
         original: oldName,
         display: newName,
         createdAt: serverTimestamp()
       })
-
       alert(`Done! ${storySnap.size} story "${newName}" ah thlak a ni!`)
       setEditId(null)
       setEditName('')
       loadCats()
+      loadAllStories()
     }catch(e){
       alert('Error: '+e.message)
     }
@@ -108,15 +152,17 @@ export default function Admin(){
   return(
     <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'75px'}}>
       <div style={{margin:'12px', background:'#111', borderRadius:'16px', padding:'6px', display:'flex', gap:'6px'}}>
-        <button onClick={()=>setTab('write')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='write'?'white':'transparent', color:tab==='write'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>✍️ WRITE STORY</button>
-        <button onClick={()=>setTab('manage')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='manage'?'white':'transparent', color:tab==='manage'?'#111':'#888', fontWeight:'800', fontSize:'14px'}}>📚 MANAGE CATEGORY</button>
+        <button onClick={()=>setTab('write')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='write'?'white':'transparent', color:tab==='write'?'#111':'#888', fontWeight:'800', fontSize:'12px'}}>✍️ WRITE</button>
+        <button onClick={()=>{setTab('stories'); loadAllStories()}} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='stories'?'white':'transparent', color:tab==='stories'?'#111':'#888', fontWeight:'800', fontSize:'12px'}}>📝 STORIES ({allStories.length})</button>
+        <button onClick={()=>setTab('manage')} style={{flex:1, padding:'14px', borderRadius:'12px', border:'none', background:tab==='manage'?'white':'transparent', color:tab==='manage'?'#111':'#888', fontWeight:'800', fontSize:'12px'}}>📚 CATEGORY</button>
       </div>
 
       <div style={{padding:'12px 16px 16px 16px'}}>
         <div style={{width:'92%', maxWidth:'420px', margin:'0 auto'}}>
           {tab==='write' && (
             <div style={{display:'flex', flexDirection:'column', gap:'14px'}}>
-              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0', color: dark?'white':'#111'}}>Story Thar Ziahna</h2>
+              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0', color: dark?'white':'#111'}}>{editStoryId? 'Story Edit Nge...' : 'Story Thar Ziahna'}</h2>
+              {editStoryId && <div style={{background:'#fff3cd', padding:'10px', borderRadius:'10px', textAlign:'center', fontSize:'13px', fontWeight:'700', color:'#856404'}}>Edit mode ah i awm - {editStoryId.slice(0,6)}... <span onClick={cancelEditStory} style={{color:'red', cursor:'pointer', marginLeft:'10px'}}>Cancel X</span></div>}
               <input placeholder="Thupui / Title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} style={box}/>
               <select value={form.category} onChange={e=>{const c=categories.find(x=>x.name===e.target.value); setSelCat(c); setForm({...form,category:e.target.value, subCategory:''})}} style={box}>
                 {categories.map(c=><option key={c.id} value={c.name}>{c.name}</option>)}
@@ -127,8 +173,28 @@ export default function Admin(){
               </select>
               <textarea placeholder="Mizo tawng a thawnthu..." value={form.contentMizo} onChange={e=>setForm({...form,contentMizo:e.target.value})} style={{...boxArea, height:'220px'}}/>
               <textarea placeholder="English original (a awm chuan)" value={form.contentEng} onChange={e=>setForm({...form,contentEng:e.target.value})} style={{...boxArea, height:'110px'}}/>
-              <button onClick={publish} style={{...box, background:'#111', color:'white', fontWeight:'800', border:'none'}}>Publish to MizoApps</button>
+              <button onClick={publish} style={{...box, background: editStoryId? '#22c55e' : '#111', color:'white', fontWeight:'800', border:'none'}}>{editStoryId? 'Save Edit' : 'Publish to MizoApps'}</button>
+              {editStoryId && <button onClick={cancelEditStory} style={{...box, background: dark?'#1e1e1e':'white', color:'#888', fontWeight:'700', border:'1px solid #ddd'}}>Cancel Edit</button>}
               <button onClick={logout} style={{...box, background: dark?'#1e1e1e':'white', color:'#ff3b30', fontWeight:'700', border:'1px solid #ff3b30'}}>Logout</button>
+            </div>
+          )}
+
+          {tab==='stories' && (
+            <div>
+              <h2 style={{fontWeight:'800', textAlign:'center', margin:'6px 0', color: dark?'white':'#111'}}>I Thu Post Tawh ({allStories.length})</h2>
+              <p style={{textAlign:'center', fontSize:'11px', color: dark?'#aaa':'#888', marginBottom:'14px'}}>A thar apiang a chung ah a awm - Edit theih vek</p>
+              <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+                {allStories.map(s=>(
+                  <div key={s.id} style={{background: dark?'#1e1e1e':'white', padding:'14px', borderRadius:'14px', border: dark?'1px solid #333':'1px solid #eee'}}>
+                    <div style={{fontWeight:'800', fontSize:'14px', color: dark?'white':'#111', marginBottom:'4px'}}>{s.title}</div>
+                    <div style={{fontSize:'11px', color:'#16a34a', fontWeight:'700', marginBottom:'8px'}}>{s.category} {s.subCategory? `> ${s.subCategory}` : ''}</div>
+                    <div style={{display:'flex', gap:'8px'}}>
+                      <button onClick={()=>startEditStory(s)} style={{flex:1, background:'#e8f0fe', color:'#1a73e8', border:'none', padding:'8px', borderRadius:'8px', fontWeight:'700', fontSize:'12px'}}>Edit</button>
+                      <button onClick={()=>deleteStory(s.id)} style={{flex:1, background:'#fee', color:'red', border:'none', padding:'8px', borderRadius:'8px', fontWeight:'700', fontSize:'12px'}}>Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -169,4 +235,4 @@ export default function Admin(){
       </div>
     </div>
   )
-                                                         }
+                }
