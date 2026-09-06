@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore'
+import Link from 'next/link'
 import { useSettings } from '../../components/SettingsContext'
 
 function timeAgo(timestamp){
@@ -20,6 +21,7 @@ export default function StoryPage({params}){
   const {dark, fontSize} = useSettings()
   const [story,setStory]=useState(null)
   const [loading,setLoading]=useState(true)
+  const [related,setRelated]=useState([])
 
   useEffect(()=>{
     window.scrollTo(0,0)
@@ -39,8 +41,43 @@ export default function StoryPage({params}){
   useEffect(()=>{
     if(story){
       window.scrollTo(0,0)
+      loadRelated()
     }
   },[story])
+
+  const loadRelated = async()=>{
+    try{
+      let relatedData = []
+      // 1. Category hmangin zawng phawt
+      if(story.category){
+        const q = query(collection(db,'stories'), where('category','==', story.category), limit(8))
+        const snap = await getDocs(q)
+        snap.forEach(d=>{
+          if(d.id !== params.id){
+            relatedData.push({id:d.id, ...d.data()})
+          }
+        })
+      }
+      // 2. Category in ang a awm loh chuan title hmangin zawng
+      if(relatedData.length < 3 && story.title){
+        const firstWord = story.title.split(' ')[0]
+        if(firstWord.length > 2){
+          const q2 = query(collection(db,'stories'), limit(20))
+          const snap2 = await getDocs(q2)
+          snap2.forEach(d=>{
+            if(d.id !== params.id && d.data().title && d.data().title.toLowerCase().includes(firstWord.toLowerCase())){
+              if(!relatedData.find(r=>r.id===d.id)){
+                relatedData.push({id:d.id, ...d.data()})
+              }
+            }
+          })
+        }
+      }
+      setRelated(relatedData.slice(0,6))
+    }catch(e){
+      console.log(e)
+    }
+  }
 
   const handleShare = async()=>{
     const url = window.location.href
@@ -98,7 +135,28 @@ export default function StoryPage({params}){
             </div>
           )}
         </div>
+
+        {/* RELATED STORY - HEI HI KA BELH CHAUH */}
+        {related.length > 0 && (
+          <div style={{marginTop:'20px'}}>
+            <div style={{fontSize:'18px', fontWeight:'800', marginBottom:'12px', color: dark?'#fff':'#111'}}>Related Story</div>
+            <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+              {related.map(r=>(
+                <Link key={r.id} href={`/story/${r.id}`} style={{textDecoration:'none'}}>
+                  <div style={{background: dark?'#1e1e1e':'white', borderRadius:'14px', padding:'14px 16px', border: dark?'1px solid #333':'1px solid #e5e5e5', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:`${fontSize-1}px`, fontWeight:'700', color: dark?'#fff':'#111', lineHeight:'1.4'}}>{r.title}</div>
+                      <div style={{fontSize:'12px', color: dark?'#aaa':'#888', marginTop:'4px'}}>{r.category || 'Story'} • {timeAgo(r.createdAt)}</div>
+                    </div>
+                    <div style={{marginLeft:'10px', color: dark?'#666':'#bbb'}}>›</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   )
-        }
+}
