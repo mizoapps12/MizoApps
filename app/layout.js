@@ -1,5 +1,6 @@
 import './globals.css'
 import Header from './components/Header'
+import Footer from './components/Footer'
 import { SettingsProvider } from './components/SettingsContext'
 
 export const metadata = { 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
         <SettingsProvider>
           <Header/>
           {children}
+          <Footer/>
         </SettingsProvider>
       </body>
     </html>
