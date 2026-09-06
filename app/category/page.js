@@ -16,35 +16,12 @@ export default function CategoriesPage(){
     const load=async()=>{
       const catSnap = await getDocs(query(collection(db,'categories'), orderBy('name','asc')))
       const storySnap = await getDocs(query(collection(db,'stories'), orderBy('createdAt','desc')))
-      const mapSnap = await getDocs(collection(db,'categoryMap'))
-
-      // Mapping - Funny Story -> Fiamthu, Love Story -> Hmangaihna
-      const translate = { 'funny story': 'Fiamthu', 'love story': 'Hmangaihna' }
-      mapSnap.docs.forEach(d=>{
-        const m = d.data()
-        if(m.original && m.display) translate[m.original.trim().toLowerCase()] = m.display
-      })
-
-      const allStories = storySnap.docs.map(d=>({id:d.id,...d.data()}))
-      setStories(allStories)
-
-      let catList = catSnap.docs.map(d=>{
-        const orig = d.data().name
-        const display = translate[orig.trim().toLowerCase()] || orig
-        return {id:d.id, name:display, orig, subcategories:d.data().subcategories || []}
-      })
-
-      // Duplicate merge - Hmangaihna vawihnih lang lo nan
-      const merged = {}
-      catList.forEach(c=>{
-        const key = c.name.toLowerCase()
-        if(!merged[key]) merged[key] = c
-        else {
-          // subcategories pawh merge
-          merged[key].subcategories = [...new Set([...(merged[key].subcategories||[]),...(c.subcategories||[])])]
-        }
-      })
-      setCategories(Object.values(merged).sort((a,b)=>a.name.localeCompare(b.name)))
+      
+      const catList = catSnap.docs.map(d=>({id:d.id,...d.data()}))
+      const storyList = storySnap.docs.map(d=>({id:d.id,...d.data()}))
+      
+      setCategories(catList)
+      setStories(storyList)
     }
     load()
   },[])
@@ -54,20 +31,11 @@ export default function CategoriesPage(){
     else{ setOpenCat(catName); setFilterSub(null) }
   }
 
+  // A inang chiah a count - translate a awm lo
   const getStoriesByCat=(catName, subName=null)=>{
     return stories.filter(s=>{
-      if(!s.category) return false
-      const sLow = s.category.trim().toLowerCase()
-      const cLow = catName.toLowerCase()
-      // Fiamthu leh Funny Story kha thuhmun, Hmangaihna leh Love Story pawh
-      let match = false
-      if(cLow === 'fiamthu') match = sLow === 'fiamthu' || sLow === 'funny story'
-      else if(cLow === 'hmangaihna') match = sLow === 'hmangaihna' || sLow === 'love story'
-      else match = sLow === cLow
-
-      if(!match) return false
-      if(subName) return s.subCategory===subName
-      return true
+      if(subName) return s.category===catName && s.subCategory===subName
+      return s.category===catName
     })
   }
 
@@ -93,24 +61,24 @@ export default function CategoriesPage(){
 
             {isOpen && (
               <div style={{background: dark?'#181818':'#fafafb', borderTop: dark?'1px solid #333':'1px solid #eee', padding:'12px'}}>
-                {hasSub? (
+                {hasSub ? (
                   <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
-                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background:!filterSub? (dark?'#fff':'#111') : (dark?'#252525':'white'), color:!filterSub? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>All ({catStories.length})</button>
+                    <button onClick={()=>setFilterSub(null)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: !filterSub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: !filterSub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>All ({catStories.length})</button>
                     {cat.subcategories.map((sub,i)=>{
                       const count = getStoriesByCat(cat.name, sub).length
-                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>{sub} ({count})</button>
+                      return <button key={i} onClick={()=>setFilterSub(sub)} style={{padding:'8px 14px', borderRadius:'20px', border: dark?'1px solid #444':'1px solid #ddd', background: filterSub===sub ? (dark?'#fff':'#111') : (dark?'#252525':'white'), color: filterSub===sub ? (dark?'#111':'white') : (dark?'#fff':'#111'), fontSize:'15px', fontWeight:'700'}}>{sub} ({count})</button>
                     })}
                   </div>
                 ) : null}
 
                 <div style={{display:'flex', flexDirection:'column', gap:'8px'}}>
-                  {getStoriesByCat(cat.name, filterSub).length===0? (
+                  {getStoriesByCat(cat.name, filterSub).length===0 ? (
                     <div style={{textAlign:'center', color:'#999', fontSize:'12px', padding:'20px'}}>Story a la awm lo</div>
                   ) : (
                     getStoriesByCat(cat.name, filterSub).map(story=>(
                       <Link key={story.id} href={`/story/${story.id}`} style={{textDecoration:'none', background: dark?'#252525':'white', padding:'12px 14px', borderRadius:'12px', border: dark?'1px solid #333':'1px solid #eee', display:'block'}}>
                         <div style={{fontWeight:'700', fontSize:'14px', color: dark?'#fff':'#111'}}>{story.title}</div>
-                        <div style={{fontSize:'11px', color: dark?'#aaa':'#888', marginTop:'2px'}}>{story.subCategory? `${cat.name} › ${story.subCategory}` : cat.name}</div>
+                        <div style={{fontSize:'11px', color: dark?'#aaa':'#888', marginTop:'2px'}}>{story.subCategory? `${story.category} › ${story.subCategory}` : story.category}</div>
                       </Link>
                     ))
                   )}
@@ -122,4 +90,4 @@ export default function CategoriesPage(){
       })}
     </div>
   )
-                      }
+}
