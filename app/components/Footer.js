@@ -1,6 +1,6 @@
 export default function Footer(){
   return(
-    <footer style={{background:'#121212', borderTop:'2.5px solid #ff8c00', padding:'18px 14px', marginTop:'30px'}}>
+    <footer style={{background:'#121212', borderTop:'2.5px solid #ff8c00', padding:'18px 14px', marginTop:'10px'}}>
       <div style={{maxWidth:'1100px', margin:'0 auto', textAlign:'center'}}>
         
         {/* Logo */}
