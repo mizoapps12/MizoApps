@@ -50,6 +50,13 @@ export default function CategoryPage(){
         return catLower === lower || catLower === searchOriginal || catLower === searchDisplay
       })
 
+      // *** HEI CHIAH KA BELH - A THAR APIANG A CHUNG LAM AH ***
+      filtered.sort((a,b)=>{
+        const ta = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0)
+        const tb = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0)
+        return tb - ta
+      })
+
       const map = {}
       filtered.forEach(s=>{
         const sc = (s.subCategory || s.series || s.sub_category || '').trim()
@@ -109,4 +116,4 @@ export default function CategoryPage(){
       </div>
     </div>
   )
-}
+                                 }
