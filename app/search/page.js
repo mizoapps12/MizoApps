@@ -32,7 +32,6 @@ export default function SearchPage(){
     fetchData()
   },[])
 
-  // Site pumpui a post zawng zawng search - title, mizo, eng, category, sub
   const filtered=stories.filter(s=>{
     const t=(qText||'').toLowerCase().trim()
     if(!t) return true
@@ -44,9 +43,7 @@ export default function SearchPage(){
   })
 
   return(
-    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'62px', transition:'background 0.3s'}}>
-      
-      {/* Search Input - A chung ber ah, a tawi deuh */}
+    <div style={{minHeight:'100vh', background: dark?'#121212':'#f2f2f7', paddingTop:'62px'}}>
       <div style={{padding:'10px 12px', position:'sticky', top:'54px', zIndex:10, background: dark?'#121212':'#f2f2f7'}}>
         <div style={{width:'92%', maxWidth:'420px', margin:'0 auto'}}>
           <input 
@@ -69,7 +66,6 @@ export default function SearchPage(){
         </div>
       </div>
 
-      {/* Results - Home page ang chiah a lang */}
       <div style={{padding:'8px 12px 20px 12px'}}>
         <div style={{width:'92%', maxWidth:'420px', margin:'0 auto', display:'flex', flexDirection:'column', gap:'12px'}}>
           {filtered.length===0 ? (
@@ -83,9 +79,9 @@ export default function SearchPage(){
               
               return(
                 <Link key={story.id} href={`/story/${story.id}`} style={{textDecoration:'none'}}>
-                  <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee'}}>
+                  <div style={{background: dark?'#1e1e1e':'white', borderRadius:'18px', padding:'18px', border: dark?'1px solid #333':'1px solid #eee', boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
                     <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px'}}>
-                      <div style={{fontSize:'12px', fontWeight:'700', color: dark?'#aaa':'#888'}}>{catDisplay}</div>
+                      <div style={{fontSize:'14px', fontWeight:'700', color:'#16a34a'}}>{catDisplay}</div>
                       <div style={{fontSize:'11px', color: dark?'#777':'#999'}}>{timeAgo(story.createdAt)}</div>
                     </div>
                     <div style={{fontSize: `${fontSize+2}px`, fontWeight:'800', color: dark?'#ffffff':'#111111', marginBottom:'10px', lineHeight:'1.3'}}>
@@ -93,6 +89,9 @@ export default function SearchPage(){
                     </div>
                     <div style={{fontSize: `${fontSize-1}px`, color: dark?'#e5e5e5':'#333333', lineHeight:'1.6', display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical', overflow:'hidden'}}>
                       {preview}...
+                    </div>
+                    <div style={{textAlign:'right', marginTop:'10px'}}>
+                      <span style={{color:'#16a34a', fontWeight:'700', fontSize:'14px'}}>Read more...</span>
                     </div>
                   </div>
                 </Link>
@@ -103,4 +102,4 @@ export default function SearchPage(){
       </div>
     </div>
   )
-                                              }
+}
