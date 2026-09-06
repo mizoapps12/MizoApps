@@ -18,7 +18,22 @@ export default function Header(){
               <line x1="21" y1="21" x2="17" y2="17"></line>
             </svg>
           </Link>
-          <button onClick={()=>setOpen(!open)} className="dot-btn">⋮</button>
+          <button onClick={()=>setOpen(!open)} className="dot-btn" style={{background:'transparent', border:'none', cursor:'pointer', padding:'8px', display:'flex', alignItems:'center', justifyContent:'center'}}>
+            {open ? (
+              // X Icon
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              // Hamburger Icon
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
         </div>
       </div>
 
