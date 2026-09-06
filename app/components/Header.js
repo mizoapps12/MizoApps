@@ -6,7 +6,7 @@ export default function Header(){
   const [open,setOpen]=useState(false)
   return(
     <>
-      <div className="header">
+      <div className="header" style={{padding:'10px 14px', background:'#121212', borderBottom:'2.5px solid #ff8c00'}}>
         <Link href="/" className="header-logo" onClick={()=>setOpen(false)}>
           <span style={{color:'#ff8c00', fontStyle:'italic', fontWeight:'800'}}>Mizo</span>
           <span style={{color:'#ffffff', fontWeight:'900'}}>Apps</span>
@@ -55,4 +55,4 @@ export default function Header(){
       )}
     </>
   )
-}
+        }
